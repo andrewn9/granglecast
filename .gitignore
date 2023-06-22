@@ -1,0 +1,7 @@
+*.swp
+*.swo
+game
+game.exe
+build
+*.dll
+*test*
