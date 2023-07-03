@@ -1,8 +1,8 @@
-// game.cpp
+/*
+ * game.cpp contains functions for initialization/shutdown of game window, and contains the game loop.
+ */
 
 #include "game.h"
-#include <SDL2/SDL_image.h>
-#include "manager.hpp"
 
 Game::Game() : window(nullptr), renderer(nullptr), isRunning(true) {}
 
@@ -38,8 +38,8 @@ bool Game::Initialize()
     }
 
     manager = new ResourceManager(renderer);
-    snare = manager -> LoadSound("../res/snd/snare.wav");
-    grangle = manager -> LoadImage("../res/tex/grangle.jpg");
+    snare = manager -> LoadSound("./res/snd/snare.wav");
+    grangle = manager -> LoadImage("./res/tex/grangle.jpg");
 
     // Create entities and components
     // ...

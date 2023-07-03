@@ -1,7 +1,9 @@
+/*
+ * main.c starts and exits the game
+ */
+
 #include "game.h"
 #include "vector2.hpp"
-#include "manager.hpp"
-#include <stdio.h>
 
 int main(int argc, char* argv[])
 {
