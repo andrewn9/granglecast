@@ -5,3 +5,9 @@ game.exe
 build
 *.dll
 *test*
+bin
+build
+include
+lib
+.vs
+.vscode
