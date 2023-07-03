@@ -1,0 +1,35 @@
+#Makefile for w64devkit targeting Windows
+#Relative paths to include and lib dir for SDL dev files
+INCLUDE_DIR = ./include
+LIB_DIR = ./lib
+
+CC = g++
+CFLAGS = -I$(INCLUDE_DIR) -Wall -Wextra -g
+DEPFLAGS = -MMD -MP
+LDFLAGS = -L$(LIB_DIR) -Wl,-subsystem,console -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer
+
+SRC_DIR = ./src
+BUILD_DIR = ./build
+
+SRCS = $(shell find $(SRC_DIR) -name "*.cpp")
+OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+DEPS = $(OBJS:.o=.d)
+
+BINPATH = ./bin/game
+
+all: $(BINPATH)
+
+$(BINPATH): $(OBJS)
+	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(DEPFLAGS) -c $< -o $@
+
+.DELETE_ON_ERROR:
+.PHONY: clean
+clean:
+	rm $(BINPATH)
+	rm -rf $(BUILD_DIR)
+
+-include $(DEPS) 
