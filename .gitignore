@@ -9,3 +9,5 @@ bin
 build
 include
 lib
+.vs
+.vscode
