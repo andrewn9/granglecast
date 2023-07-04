@@ -4,7 +4,10 @@
 
 #pragma once
 
+#include <iostream>
 #include <SDL2/SDL.h>
+
+#include "ecs/entitymanager.h"
 #include "resourcemanager.h"
 
 #define WINDOW_WIDTH    640
@@ -12,6 +15,9 @@
 
 #define WINDOW_NAME     "sick window"
 
+#define MAX_ENTITIES    100
+
+class EntityManager;
 class Game
 {
 public:
@@ -27,7 +33,8 @@ public:
     void Shutdown();
 
 private:
-    ResourceManager* manager;
+    ResourceManager* resmanager;
+    EntityManager* entityManager;
     SDL_Window* window;
     SDL_Renderer* renderer;
     bool isRunning;

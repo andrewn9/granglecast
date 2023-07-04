@@ -37,12 +37,29 @@ bool Game::Initialize()
         return false;
     }
 
-    manager = new ResourceManager(renderer);
-    snare = manager -> LoadSound("./res/snd/snare.wav");
-    grangle = manager -> LoadImage("./res/tex/grangle.jpg");
+    resmanager = new ResourceManager(renderer);
+    snare = resmanager->LoadSound("./res/snd/snare.wav");
+    grangle = resmanager->LoadImage("./res/tex/grangle.jpg");
 
     // Create entities and components
     // ...
+
+    entityManager = new EntityManager();
+
+    Entity entity1 = entityManager->CreateEntity();
+    Entity entity2 = entityManager->CreateEntity();
+    Entity entity3 = entityManager->CreateEntity();
+    
+    entityManager->AddComponent(entity1, Transform2D{{0.0f, 0.0f}, {0.0f, 0.0f}});
+    entityManager->AddComponent(entity2, Transform2D{{0.0f, 0.0f}, {0.0f, 0.0f}});
+
+    const std::vector<Entity>& entitiesWithTransform = entityManager->GetEntitiesWithComponent<Transform2D>();
+
+    for (Entity entity : entitiesWithTransform) {
+        SDL_Log("Entity with Transform2D: %d", entity);
+    }
+
+    Transform2D* transform1 = entityManager->GetComponent<Transform2D>(entity1);
 
     return true;
 }
@@ -66,7 +83,7 @@ void Game::RunLoop()
 				switch (event.key.keysym.scancode)
 				{
 				case SDL_SCANCODE_W:
-					snare -> Play();
+					snare->Play();
                     break;
                 default:
                     break;
@@ -90,7 +107,7 @@ void Game::RunLoop()
 
 void Game::Shutdown()
 {
-    manager -> Close();
+    resmanager->Close();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
