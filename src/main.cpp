@@ -3,15 +3,14 @@
  */
 
 #include "game.h"
-#include "vector2.hpp"
+
+#include "ecs/components.h"
+#include "ecs/entitymanager.h"
+#include "vector2.h"
 
 int main(int argc, char* argv[])
 {
     Game game;
-
-    Vector2 *vector = new Vector2(1, 2);
-
-    printf("x :%f y:%f\n", (*vector).x, vector -> y);
 
     if (game.Initialize())
     {
