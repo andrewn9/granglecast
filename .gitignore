@@ -1,7 +1,8 @@
 *.swp
 *.swo
-game
-game.exe
+*.exe
+*.o
+*.obj
 build
 *.dll
 *test*
@@ -9,5 +10,9 @@ bin
 build
 include
 lib
+game
 .vs
 .vscode
+*.sln
+*.vcxproj
+*.vcxproj.filters
