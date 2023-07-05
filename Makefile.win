@@ -15,7 +15,7 @@ SRCS = $(shell find $(SRC_DIR) -name "*.cpp")
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 DEPS = $(OBJS:.o=.d)
 
-BINPATH = ./bin/game
+BINPATH = ./game
 
 all: $(BINPATH)
 
