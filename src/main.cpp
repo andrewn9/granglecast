@@ -1,22 +1,21 @@
+
 /*
- * main.c starts and exits the game
+ * main.cpp is the entry point of the game.
+ * It initializes the Game object, runs the game loop, and shuts down the game.
  */
 
 #include "game.h"
-
-#include "ecs/components.h"
-#include "ecs/entitymanager.h"
-#include "vector2.h"
 
 int main(int argc, char* argv[])
 {
     Game game;
 
-    if (game.Initialize())
-    {
+    // Check if game initialized successfully
+    if (game.Initialize()) {
         game.RunLoop();
     }
 
+    // Exit
     game.Shutdown();
     return 0;
 }

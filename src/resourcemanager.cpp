@@ -7,36 +7,29 @@
 
 #include "resourcemanager.h"
 
-Sound::Sound(const char* path)
-{
+Sound::Sound(const char* path) {
     chunk = Mix_LoadWAV(path);
-    if (!chunk)
-    {
+    if (!chunk) {
         SDL_Log("Failed to load sound: %s", path);
     }
 }
 
-void Sound::Play()
-{
-    if (chunk)
-    {
+void Sound::Play() {
+    if (chunk) {
         Mix_PlayChannel(-1, chunk, 0);
     }
 }
 
-Image::Image(const char* path, SDL_Renderer* renderer)
-{
+Image::Image(const char* path, SDL_Renderer* renderer) {
     surface = IMG_Load(path);
-    if (!surface)
-    {
+    if (!surface) {
         SDL_Log("Failed to load image: %s", path);
         return;
     }
 
-    ren = renderer;
-    texture = SDL_CreateTextureFromSurface(ren, surface);
-    if (!texture)
-    {
+    this->renderer = renderer;
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) {
         SDL_Log("Failed to create texture from surface: %s", path);
         SDL_FreeSurface(surface);
         return;
@@ -48,55 +41,42 @@ Image::Image(const char* path, SDL_Renderer* renderer)
     drect.h = surface->h;
 }
 
-void Image::Render()
-{
-    if (ren && texture)
-    {
-        SDL_RenderCopy(ren, texture, &srect, &drect);
+void Image::Render() {
+    if (renderer && texture) {
+        SDL_RenderCopy(renderer, texture, &srect, &drect);
     }
 }
 
-ResourceManager::ResourceManager(SDL_Renderer* renderer)
-{
-    if (Mix_Init(MIX_INIT_MP3) != MIX_INIT_MP3)
-    {
+ResourceManager::ResourceManager(SDL_Renderer* renderer) {
+    if (Mix_Init(MIX_INIT_MP3) != MIX_INIT_MP3) {
         SDL_Log("Failed to initialize SDL_mixer");
     }
 
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
-    {
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
         SDL_Log("Failed to open audio: %s", Mix_GetError());
     }
 
-    ren = renderer;
+    this->renderer = renderer;
 }
 
-Sound* ResourceManager::LoadSound(const char* path)
-{
+Sound* ResourceManager::LoadSound(const char* path) {
     Sound* sound = new Sound(path);
-    if (sound && sound->chunk)
-    {
+    if (sound && sound->chunk) {
         sounds[path] = sound;
         return sound;
-    }
-    else
-    {
+    } else {
         delete sound;
         SDL_Log("Failed to load sound: %s", path);
         return nullptr;
     }
 }
 
-Image* ResourceManager::LoadImage(const char* path)
-{
-    Image* image = new Image(path, ren);
-    if (image && image->surface && image->texture)
-    {
+Image* ResourceManager::LoadImage(const char* path) {
+    Image* image = new Image(path, renderer);
+    if (image && image->surface && image->texture) {
         images[path] = image;
         return image;
-    }
-    else
-    {
+    } else {
         delete image;
         SDL_Log("Failed to load image: %s", path);
         return nullptr;
@@ -104,12 +84,9 @@ Image* ResourceManager::LoadImage(const char* path)
 }
 
 
-void ResourceManager::Close()
-{
-    for (const auto& [key, sound] : sounds)
-    {
-        if (sound && sound->chunk)
-        {
+void ResourceManager::Close() {
+    for (const auto& [key, sound] : sounds) {
+        if (sound && sound->chunk) {
             Mix_FreeChunk(sound->chunk);
         }
         delete sound;
@@ -118,10 +95,8 @@ void ResourceManager::Close()
     Mix_CloseAudio();
     Mix_Quit();
 
-    for (const auto& [key, image] : images)
-    {
-        if (image)
-        {
+    for (const auto& [key, image] : images) {
+        if (image) {
             SDL_FreeSurface(image->surface);
             SDL_DestroyTexture(image->texture);
         }

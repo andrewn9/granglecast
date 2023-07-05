@@ -13,48 +13,45 @@
 #include <unordered_map>
 #include <string>
 
-class Sound
-{
-public:
-    Mix_Chunk* chunk;
+class Sound {
+    public:
+        Mix_Chunk* chunk;
 
-    Sound(const char* path);
-    void Play();
+        Sound(const char* path);
+        void Play();
 };
 
-class Image
-{
-public:
-    SDL_Surface* surface;
-    SDL_Texture* texture;
+class Image {
+    public:
+        SDL_Surface* surface;
+        SDL_Texture* texture;
 
-    SDL_Rect srect = {0, 0, 0, 0};
-    SDL_Rect drect = {0, 0, 0, 0};
+        SDL_Rect srect = {0, 0, 0, 0};
+        SDL_Rect drect = {0, 0, 0, 0};
 
-    SDL_Renderer* ren;
+        SDL_Renderer* renderer;
 
-    Image(const char* path, SDL_Renderer* renderer);
-    void Render();
+        Image(const char* path, SDL_Renderer* renderer);
+        void Render();
 };
 
-class ResourceManager
-{
-private:
+class ResourceManager {
+    private:
 
-    // Resource maps with file paths as keys
-    std::unordered_map<std::string, Sound*> sounds;
-    std::unordered_map<std::string, Image*> images;
+        // Resource maps with file paths as keys
+        std::unordered_map<std::string, Sound*> sounds;
+        std::unordered_map<std::string, Image*> images;
 
-    SDL_Renderer* ren;
+        SDL_Renderer* renderer;
 
-public:
-    ResourceManager(SDL_Renderer* renderer);
-    
-    // Image and sound initialization methods
-    Sound* LoadSound(const char* path);
-    Image* LoadImage(const char* path);
+    public:
+        ResourceManager(SDL_Renderer* renderer);
+        
+        // Image and sound initialization methods
+        Sound* LoadSound(const char* path);
+        Image* LoadImage(const char* path);
 
-    // Frees all resources and exits
-    void Close();
+        // Frees all resources and exits
+        void Close();
 };
 

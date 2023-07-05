@@ -1,6 +1,7 @@
 /*
- * entitymanager.h
- *
+ * entitymanager.h 
+ * Holds the EntityManager class, which manages entities and their components.
+ * Contains methods for the creation, addition, retrieval, and removal of components associated with entities.
  */
 
 #pragma once
@@ -15,28 +16,30 @@
 typedef uint32_t Entity;
 
 class EntityManager {
-public:
-    Entity CreateEntity();
+    public:
+        // Returns a newly created entity with a unique id
+        Entity CreateEntity();
 
-    // Associates component with entity
-    template<typename Component>
-    void AddComponent(Entity entity, Component&& component);
+        // Associates component with entity
+        template<typename Component>
+        void AddComponent(Entity entity, Component&& component);
 
-    // Gets component associated with entity
-    template<typename Component>
-    Component* GetComponent(Entity entity);
+        // Gets component associated with entity
+        template<typename Component>
+        Component* GetComponent(Entity entity);
 
-    // Returns all entities with the specified component
-    template<typename Component>
-    const std::vector<Entity>& GetEntitiesWithComponent();
-private:
-    uint32_t entities = 0;
+        // Returns all entities with the specified component
+        template<typename Component>
+        const std::vector<Entity>& GetEntitiesWithComponent();
+        
+    private:
+        uint32_t entities = 0;
 
-    // The entity is the key. At each entity pair, is a pair of the component type index and the actual component struct.
-    std::unordered_map<Entity, std::unordered_map<std::type_index, void*>> components;
+        // The entity is the key. At each entity pair, is a pair of the component type index and the actual component struct.
+        std::unordered_map<Entity, std::unordered_map<std::type_index, void*>> components;
 
-    // The component type is the key, with a vector of all entities that posseses it 
-    std::unordered_map<std::type_index, std::vector<Entity>> componentIndex;
+        // The component type is the key, with a vector of all entities that posseses it 
+        std::unordered_map<std::type_index, std::vector<Entity>> componentIndex;
 };
 
 template<typename Component>
