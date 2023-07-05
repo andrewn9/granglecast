@@ -1,114 +1,116 @@
 /*
- * game.cpp contains functions for initialization/shutdown of game window, and contains the game loop.
+ *  game.cpp
+ *  Implementation of the Game class, representing the main game logic and loop.
+ *  It initializes the game, processes events, and manages the game loop.
  */
 
 #include "game.h"
 
-Game::Game() : window(nullptr), renderer(nullptr), isRunning(true) {}
+namespace game {
+    ResourceManager* resource_manager = nullptr;
+    SDL_Window* window = nullptr;
+    SDL_Renderer* renderer = nullptr;
+    uint32_t deltaTime = 0;
+}
 
-Sound *snare;
-Image *grangle;
+bool Game::Initialize() {
 
-bool Game::Initialize()
-{
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
-    {
+    // Initialize SDL
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         SDL_Log("Failed to initialize SDL: %s", SDL_GetError());
         return false;
     }
 
-    window = SDL_CreateWindow(WINDOW_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
-    if (!window)
-    {
+    // Initialize window
+    game::window = SDL_CreateWindow(WINDOW_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+    if (!game::window) {
         SDL_Log("Failed to create window: %s", SDL_GetError());
         return false;
     }
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!renderer)
-    {
+    // Initialize renderer
+    game::renderer = SDL_CreateRenderer(game::window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!game::renderer) {
         SDL_Log("Failed to create renderer: %s", SDL_GetError());
         return false;
     }
 
-    if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG)
-    {
+    // Initialize resource_manager and SDL_IMG
+    game::resource_manager = new ResourceManager(game::renderer);
+
+    if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG) {
         SDL_Log("Failed to initialize SDL_image: %s", IMG_GetError());
         return false;
     }
 
-    resmanager = new ResourceManager(renderer);
-    snare = resmanager->LoadSound("./res/snd/snare.wav");
-    grangle = resmanager->LoadImage("./res/tex/grangle.jpg");
+
+    // snare = game::resource_manager->LoadSound("./res/snd/snare.wav");
+    // grangle = game::resource_manager->LoadImage("./res/tex/grangle.jpg");
 
     // Create entities and components
     // ...
 
-    entityManager = new EntityManager();
 
-    Entity entity1 = entityManager->CreateEntity();
-    Entity entity2 = entityManager->CreateEntity();
-    Entity entity3 = entityManager->CreateEntity();
+    // entityManager = new EntityManager();
+
+    // Entity entity1 = entityManager->CreateEntity();
+    // Entity entity2 = entityManager->CreateEntity();
+    // Entity entity3 = entityManager->CreateEntity();
     
-    entityManager->AddComponent(entity1, Transform2D{{0.0f, 0.0f}, {0.0f, 0.0f}});
-    entityManager->AddComponent(entity2, Transform2D{{0.0f, 0.0f}, {0.0f, 0.0f}});
+    // entityManager->AddComponent(entity1, Transform2D{{0.0f, 0.0f}, {0.0f, 0.0f}});
+    // entityManager->AddComponent(entity2, Transform2D{{0.0f, 0.0f}, {0.0f, 0.0f}});
 
-    const std::vector<Entity>& entitiesWithTransform = entityManager->GetEntitiesWithComponent<Transform2D>();
+    // const std::vector<Entity>& entitiesWithTransform = entityManager->GetEntitiesWithComponent<Transform2D>();
 
-    for (Entity entity : entitiesWithTransform) {
-        SDL_Log("Entity with Transform2D: %d", entity);
-    }
+    // for (Entity entity : entitiesWithTransform) {
+    //     SDL_Log("Entity with Transform2D: %d", entity);
+    // }
 
-    Transform2D* transform1 = entityManager->GetComponent<Transform2D>(entity1);
+    // Transform2D* transform1 = entityManager->GetComponent<Transform2D>(entity1);
 
     return true;
 }
 
-void Game::RunLoop()
-{
-    while (isRunning)
-    {
+void Game::RunLoop() {
+    uint32_t last_tick_time = 0;
+
+    while (is_running) {
         // Process events
         SDL_Event event;
-        while (SDL_PollEvent(&event))
-        {
-            switch (event.type)
-			{
-			case SDL_QUIT:
-				isRunning = false;
-				break;
-			case SDL_KEYDOWN:
-				// Method #1 for getting keyboard input:
-				// Checking for SDL_KEYDOWN or SDL_KEYUP events
-				switch (event.key.keysym.scancode)
-				{
-				case SDL_SCANCODE_W:
-					snare->Play();
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT:
+                    is_running = false;
                     break;
-                default:
+                case SDL_KEYDOWN:
+                    // Method #1 for getting keyboard input:
+                    // Checking for SDL_KEYDOWN or SDL_KEYUP events
+                    switch (event.key.keysym.scancode) {
+                        case SDL_SCANCODE_W:
+                            //snare->Play();
+                            break;
+                        default:
+                            break;
+                    }
                     break;
-                }
-                break;
 		    }
-            // Add additional event handling here if needed
         }
 
-        // Process input
-        // ...
+        //  world.update();
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
+        // SDL_SetRenderDrawColor(game::renderer, 0, 0, 0, 255);
+        // SDL_RenderClear(game::renderer);
 
-        grangle->Render();
+        // // grangle->Render();
 
-        SDL_RenderPresent(renderer);
+        // SDL_RenderPresent(game::renderer);
     }
 }
 
-void Game::Shutdown()
-{
-    resmanager->Close();
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+// Exit game
+void Game::Shutdown() {
+    game::resource_manager->Close();
+    SDL_DestroyRenderer(game::renderer);
+    SDL_DestroyWindow(game::window);
     SDL_Quit();
 }

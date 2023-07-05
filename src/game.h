@@ -1,12 +1,14 @@
 /*
- * game.h contains functions for initialization/shutdown of game window, and contains the game loop.
+ * game.h
+ * Defines the game class which represents the main game logic and loop.
  */
 
 #pragma once
 
-#include <iostream>
+#include <cstdint>
 #include <SDL2/SDL.h>
 
+#include "world.h"
 #include "ecs/entitymanager.h"
 #include "resourcemanager.h"
 
@@ -17,25 +19,26 @@
 
 #define MAX_ENTITIES    100
 
-class EntityManager;
-class Game
-{
-public:
-    Game();
+namespace game {
+    extern ResourceManager* resource_manager;
+    extern SDL_Window* window;
+    extern SDL_Renderer* renderer;
+    extern uint32_t delta_time;
+}
 
-    // Initializes SDL_Window and SDL_Renderer, SDL_Init(), ResourceManager
-    bool Initialize();
+class Game {
+    public:
+        // Initializes SDL_Window and SDL_Renderer, SDL_Init(), ResourceManager
+        bool Initialize();
 
-    // Processes inputs and draws screen
-    void RunLoop();
+        // Processes inputs and draws screen
+        void RunLoop();
 
-    // Frees all resources and safely exit game
-    void Shutdown();
+        // Frees all resources and safely exit game
+        void Shutdown();
 
-private:
-    ResourceManager* resmanager;
-    EntityManager* entityManager;
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    bool isRunning;
+    private:
+        World* world;
+        bool is_running = true;
 };
+
