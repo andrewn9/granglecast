@@ -8,14 +8,14 @@
 #include <cstdint>
 #include <SDL2/SDL.h>
 
-#include "world.h"
-#include "ecs/entitymanager.h"
 #include "resourcemanager.h"
+#include "ecs/world.h"
+#include "ecs/entitymanager.h"
 
 #define WINDOW_WIDTH    640
 #define WINDOW_HEIGHT   400
 
-#define WINDOW_NAME     "sick window"
+#define WINDOW_NAME     "granglecast"
 
 #define MAX_ENTITIES    100
 
@@ -23,7 +23,7 @@ namespace game {
     extern ResourceManager* resource_manager;
     extern SDL_Window* window;
     extern SDL_Renderer* renderer;
-    extern uint32_t delta_time;
+    extern double delta_time;
 }
 
 class Game {
