@@ -11,6 +11,7 @@ namespace game {
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
     double delta_time = 0;
+    const Uint8 *key_state;
 }
 
 bool Game::Initialize() {
@@ -29,7 +30,7 @@ bool Game::Initialize() {
     }
 
     // Initialize renderer
-    game::renderer = SDL_CreateRenderer(game::window, -1, SDL_RENDERER_ACCELERATED);
+    game::renderer = SDL_CreateRenderer(game::window, -1, SDL_RENDERER_ACCELERATED /* | SDL_RENDERER_PRESENTVSYNC */);
     if (!game::renderer) {
         SDL_Log("Failed to create renderer: %s", SDL_GetError());
         return false;
@@ -42,6 +43,8 @@ bool Game::Initialize() {
         SDL_Log("Failed to initialize SDL_image: %s", IMG_GetError());
         return false;
     }
+
+	game::key_state = SDL_GetKeyboardState(NULL);
 
     world = new World();
 

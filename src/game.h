@@ -23,7 +23,8 @@ namespace game {
     extern ResourceManager* resource_manager;
     extern SDL_Window* window;
     extern SDL_Renderer* renderer;
-    extern double delta_time;
+    extern double delta_time;\
+    extern const Uint8* key_state;
 }
 
 class Game {
