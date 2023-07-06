@@ -2,7 +2,7 @@
 #include "../../game.h"
 
 void RenderingSystem::Update(float delta_time) {
-    SDL_SetRenderDrawColor(game::renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(game::renderer, 255, 255, 255, 255);
     SDL_RenderClear(game::renderer);
 
     for (Entity entity : world::entity_manager->GetEntitiesWithComponent<Sprite>()) {
