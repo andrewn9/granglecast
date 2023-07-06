@@ -5,15 +5,9 @@
 
 #pragma once
 
-#include <vector>
 #include "entitymanager.h"
 
-class EntityManager;
 class System {
     public:
-        // Update function to be overriden
-        virtual void update(float deltaTime) = 0;
-
-    protected:
-        EntityManager* entityManager;
+        virtual void Update(float delta_time) = 0;
 };
