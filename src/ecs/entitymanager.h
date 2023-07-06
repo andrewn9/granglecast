@@ -66,6 +66,7 @@ const std::vector<Entity>& EntityManager::GetEntitiesWithComponent() {
     }
     
     // If the component type is not found, return an empty vector
+    SDL_Log("No component type was found");
     static const std::vector<Entity> emptyVector;
     return emptyVector;
 }
@@ -80,7 +81,7 @@ Component* EntityManager::GetComponent(Entity entity) {
         // Check if the component type exists for the entity
         auto componentIt = entityIt->second.find(componentType);
         if (componentIt != entityIt->second.end()) {
-            // Component type found, return the component pointer
+            // Component type found, cast the component pointer using static_cast
             return static_cast<Component*>(componentIt->second);
         }
     }
@@ -88,3 +89,4 @@ Component* EntityManager::GetComponent(Entity entity) {
     // If the component or entity is not found, return nullptr
     return nullptr;
 }
+
