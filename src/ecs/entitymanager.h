@@ -10,8 +10,8 @@
 #include <typeindex>
 #include <vector>
 #include <unordered_map>
+
 #include "components.h"
-#include "../game.h"
 
 typedef uint32_t Entity;
 
@@ -34,6 +34,7 @@ class EntityManager {
         
     private:
         uint32_t entities = 0;
+        const uint32_t MAX_ENTITIES = 100;
 
         // The entity is the key. At each entity pair, is a pair of the component type index and the actual component struct.
         std::unordered_map<Entity, std::unordered_map<std::type_index, void*>> components;

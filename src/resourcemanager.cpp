@@ -7,46 +7,6 @@
 
 #include "resourcemanager.h"
 
-Sound::Sound(const char* path) {
-    chunk = Mix_LoadWAV(path);
-    if (!chunk) {
-        SDL_Log("Failed to load sound: %s", path);
-    }
-}
-
-void Sound::Play() {
-    if (chunk) {
-        Mix_PlayChannel(-1, chunk, 0);
-    }
-}
-
-Image::Image(const char* path, SDL_Renderer* renderer) {
-    surface = IMG_Load(path);
-    if (!surface) {
-        SDL_Log("Failed to load image: %s", path);
-        return;
-    }
-
-    this->renderer = renderer;
-    texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (!texture) {
-        SDL_Log("Failed to create texture from surface: %s", path);
-        SDL_FreeSurface(surface);
-        return;
-    }
-
-    srect.w = surface->w;
-    srect.h = surface->h;
-    drect.w = surface->w;
-    drect.h = surface->h;
-}
-
-void Image::Render() {
-    if (renderer && texture) {
-        SDL_RenderCopy(renderer, texture, &srect, &drect);
-    }
-}
-
 ResourceManager::ResourceManager(SDL_Renderer* renderer) {
     if (Mix_Init(MIX_INIT_MP3) != MIX_INIT_MP3) {
         SDL_Log("Failed to initialize SDL_mixer");
