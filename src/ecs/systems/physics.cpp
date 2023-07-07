@@ -1,7 +1,11 @@
-#include "physics.h"
-#include "../../game.h"
+/*
+ * physics.cpp
+ */
 
-void PhysicsSystem::Update(float delta_time) {
+#include "physics.h"
+#include "../world.h"
+
+void PhysicsSystem::Update() {
 
     for (Entity entityA : world::entity_manager->GetEntitiesWithComponent<Transform2D>()) {
         
@@ -9,7 +13,12 @@ void PhysicsSystem::Update(float delta_time) {
             
             if(entityA != entityB) {
                 if(AABB(entityA, entityB)) {
-                    SDL_Log("%d is colliding with %d", entityA, entityB);
+
+                    CollisionEvent collisionEvent;
+                    collisionEvent.entityA = entityA;
+                    collisionEvent.entityB = entityB;
+
+                    world::event_manager->fire(collisionEvent);
                 }
             }
         }
