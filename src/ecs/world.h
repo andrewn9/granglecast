@@ -17,12 +17,14 @@
 namespace world {
     extern EntityManager* entity_manager;
     extern EventManager* event_manager;
+    extern Entity camera;
 }
 
 class World {
     public:
         World();
         void Update();
+        void FixedUpdate();
     private:
         std::vector<System*> systems;
 };

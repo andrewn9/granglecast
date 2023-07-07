@@ -25,6 +25,7 @@ namespace game {
     extern SDL_Window* window;
     extern SDL_Renderer* renderer;
     extern double delta_time;
+    extern double const physics_time;
     extern bool is_running;
 }
 

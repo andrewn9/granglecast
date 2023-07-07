@@ -14,6 +14,12 @@ struct Transform2D {
     Vector2 size;
 };
 
+// Velocity: Holds the Vector2 for the velocity of an object (pixels/second)
+struct Velocity {
+    Vector2 velocity;
+};
+
 struct Sprite {
     Image* image;
 };
+

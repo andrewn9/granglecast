@@ -3,12 +3,16 @@
  */
 
 #include "physics.h"
+#include "../../game.h"
 #include "../world.h"
 
 void PhysicsSystem::Update() {
 
     for (Entity entityA : world::entity_manager->GetEntitiesWithComponent<Transform2D>()) {
-        
+        if (world::entity_manager->GetComponent<Velocity>(entityA)) {
+            Vector2* velocity = &world::entity_manager->GetComponent<Velocity>(entityA)->velocity;
+            world::entity_manager->GetComponent<Transform2D>(entityA)->position += *velocity;
+        }
         for (Entity entityB : world::entity_manager->GetEntitiesWithComponent<Transform2D>()) {
             
             if(entityA != entityB) {

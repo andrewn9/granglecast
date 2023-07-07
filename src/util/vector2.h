@@ -60,4 +60,8 @@ struct Vector2 {
         y /= scalar;
         return *this;
     }
+
+    Vector2 Lerp(const Vector2& other, const float factor) {
+        return Vector2{x + (other.x - x) * factor, y + (other.y - y) * factor};
+    }
 };

@@ -22,7 +22,7 @@ void RenderingSystem::Draw(Entity entity) {
     Image* image = world::entity_manager->GetComponent<Sprite>(entity)->image;
     Transform2D* transform = world::entity_manager->GetComponent<Transform2D>(entity);
 
-    Vector2 position = transform->position;
+    Vector2 position = transform->position - world::entity_manager->GetComponent<Transform2D>(world::camera)->position - Vector2{-WINDOW_WIDTH/2,-WINDOW_HEIGHT/2};
     Vector2 size = transform->size;
 
     // Calculate the centered position
