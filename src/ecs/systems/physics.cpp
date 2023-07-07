@@ -7,7 +7,6 @@
 #include "../world.h"
 
 void PhysicsSystem::Update() {
-
     for (Entity entityA : world::entity_manager->GetEntitiesWithComponent<Transform2D>()) {
         if (world::entity_manager->GetComponent<Velocity>(entityA)) {
             Vector2* velocity = &world::entity_manager->GetComponent<Velocity>(entityA)->velocity;
@@ -27,7 +26,6 @@ void PhysicsSystem::Update() {
             }
         }
     }
-
 }
 
 bool PhysicsSystem::AABB(Entity entity, Entity other) {

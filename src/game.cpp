@@ -30,7 +30,7 @@ bool Game::Initialize() {
     }
 
     // Initialize renderer
-    game::renderer = SDL_CreateRenderer(game::window, -1, SDL_RENDERER_ACCELERATED /* | SDL_RENDERER_PRESENTVSYNC */);
+    game::renderer = SDL_CreateRenderer(game::window, -1, SDL_RENDERER_ACCELERATED  | SDL_RENDERER_PRESENTVSYNC );
     if (!game::renderer) {
         SDL_Log("Failed to create renderer: %s", SDL_GetError());
         return false;
