@@ -12,6 +12,7 @@ namespace game {
     SDL_Renderer* renderer = nullptr;
     double delta_time = 1.0f/60;
     bool is_running = true;
+    double const physics_time = 1.0f/60;
 }
 
 bool Game::Initialize() {
@@ -51,11 +52,21 @@ bool Game::Initialize() {
 // Initiate update loop
 void Game::RunLoop() {
     Uint64 last_tick = SDL_GetPerformanceCounter();
+    float accumulator;
     while (game::is_running) {
         game::delta_time = (double) (SDL_GetPerformanceCounter() - last_tick) / SDL_GetPerformanceFrequency();
         last_tick = SDL_GetPerformanceCounter();
+
+        accumulator += game::delta_time;
+
+        while(accumulator >= game::physics_time) {
+            world->FixedUpdate();
+            accumulator -= game::physics_time;
+        } 
+
         world->Update();
-        //SDL_Delay(16);
+
+        SDL_Delay(16);
     }
     Shutdown();
 }

@@ -57,6 +57,12 @@ World::World() {
    // });
 }
 
+void World::FixedUpdate() {
+   physics_system->Update();
+
+   world::entity_manager->GetComponent<Transform2D>(world::camera)->position = (world::entity_manager->GetComponent<Transform2D>(world::camera)->position).Lerp(world::entity_manager->GetComponent<Transform2D>(scug)->position, 0.1f);
+}
+
 void World::Update() {
    input_system->Update();
 
@@ -79,8 +85,5 @@ void World::Update() {
       position->x -= SCUG_SPEED*game::delta_time;
    }
 
-   world::entity_manager->GetComponent<Transform2D>(world::camera)->position = world::entity_manager->GetComponent<Transform2D>(world::camera)->position.Lerp(*position, 1 - pow(0.9, (60.0f / (1.0f / game::delta_time))));
-
    rendering_system->Update();
-   physics_system->Update();  
 }
