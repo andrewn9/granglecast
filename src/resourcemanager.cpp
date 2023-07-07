@@ -7,6 +7,7 @@
 
 #include "resourcemanager.h"
 
+// Initialize SDL_Mixer and open audio channel
 ResourceManager::ResourceManager(SDL_Renderer* renderer) {
     if (Mix_Init(MIX_INIT_MP3) != MIX_INIT_MP3) {
         SDL_Log("Failed to initialize SDL_mixer");
@@ -19,6 +20,7 @@ ResourceManager::ResourceManager(SDL_Renderer* renderer) {
     this->renderer = renderer;
 }
 
+// Loads sound from specified path
 Sound* ResourceManager::LoadSound(const char* path) {
     Sound* sound = new Sound(path);
     if (sound && sound->chunk) {
@@ -31,6 +33,7 @@ Sound* ResourceManager::LoadSound(const char* path) {
     }
 }
 
+// Loads image from specified path
 Image* ResourceManager::LoadImage(const char* path) {
     Image* image = new Image(path, renderer);
     if (image && image->surface && image->texture) {
@@ -43,7 +46,7 @@ Image* ResourceManager::LoadImage(const char* path) {
     }
 }
 
-
+// Free all resources
 void ResourceManager::Close() {
     for (const auto& [key, sound] : sounds) {
         if (sound && sound->chunk) {
