@@ -14,6 +14,11 @@ struct Transform2D {
     Vector2 size;
 };
 
+struct Velocity {
+    Vector2 velocity;
+};
+
 struct Sprite {
     Image* image;
 };
+

@@ -36,6 +36,7 @@ World::World() {
    scug2 = world::entity_manager->CreateEntity();
    world::entity_manager->AddComponent(scug2, Sprite{grangle});
    world::entity_manager->AddComponent(scug2, Transform2D{Vector2{75,75},Vector2{50,50}});
+   world::entity_manager->AddComponent(scug2, Velocity{Vector2{5,5}});
    //SDL_Log("scug2 %d\n", scug2);
    
    world::event_manager->connect<CollisionEvent>([](const CollisionEvent& event) {
