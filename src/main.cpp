@@ -13,9 +13,9 @@ int main(int argc, char* argv[])
     // Check if game initialized successfully
     if (game.Initialize()) {
         game.RunLoop();
+    } else {
+        game.Shutdown();
     }
-
-    // Exit
-    game.Shutdown();
+    
     return 0;
 }
