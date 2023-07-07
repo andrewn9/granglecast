@@ -11,11 +11,10 @@ namespace game {
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
     double delta_time = 0;
-    const Uint8 *key_state;
+    bool is_running = true;
 }
 
 bool Game::Initialize() {
-
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         SDL_Log("Failed to initialize SDL: %s", SDL_GetError());
@@ -44,33 +43,20 @@ bool Game::Initialize() {
         return false;
     }
 
-	game::key_state = SDL_GetKeyboardState(NULL);
-
     world = new World();
-
+    
     return true;
 }
 
+// Initiate update loop
 void Game::RunLoop() {
     Uint64 last_tick = SDL_GetPerformanceCounter();
-
-    while (is_running) {
-
+    while (game::is_running) {
         game::delta_time = (double) (SDL_GetPerformanceCounter() - last_tick) / SDL_GetPerformanceFrequency();
         last_tick = SDL_GetPerformanceCounter();
-        
-        // Process events
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-                case SDL_QUIT:
-                    is_running = false;
-                    break;
-		    }
-        }
-
         world->Update();
     }
+    Shutdown();
 }
 
 // Exit game

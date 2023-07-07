@@ -6,6 +6,7 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 #include <SDL2/SDL.h>
 
 #include "resourcemanager.h"
@@ -23,8 +24,8 @@ namespace game {
     extern ResourceManager* resource_manager;
     extern SDL_Window* window;
     extern SDL_Renderer* renderer;
-    extern double delta_time;\
-    extern const Uint8* key_state;
+    extern double delta_time;
+    extern bool is_running;
 }
 
 class Game {
@@ -40,6 +41,5 @@ class Game {
 
     private:
         World* world;
-        bool is_running = true;
 };
 
