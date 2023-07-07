@@ -10,7 +10,7 @@ namespace game {
     ResourceManager* resource_manager = nullptr;
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
-    double delta_time = 0;
+    double delta_time = 1.0f/60;
     bool is_running = true;
 }
 
@@ -55,6 +55,7 @@ void Game::RunLoop() {
         game::delta_time = (double) (SDL_GetPerformanceCounter() - last_tick) / SDL_GetPerformanceFrequency();
         last_tick = SDL_GetPerformanceCounter();
         world->Update();
+        //SDL_Delay(16);
     }
     Shutdown();
 }

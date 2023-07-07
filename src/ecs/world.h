@@ -17,6 +17,7 @@
 namespace world {
     extern EntityManager* entity_manager;
     extern EventManager* event_manager;
+    extern Entity camera;
 }
 
 class World {

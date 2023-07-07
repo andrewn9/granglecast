@@ -8,12 +8,14 @@
 #include "systems/rendering.h"
 #include "systems/physics.h"
 #include "systems/inputs.h"
+#include <math.h>
 
 #define SCUG_SPEED   50
 
 namespace world{
    EntityManager* entity_manager;
    EventManager* event_manager;
+   Entity camera;
 }
 
 Entity scug, scug2;
@@ -26,6 +28,9 @@ World::World() {
    world::entity_manager = new EntityManager(); 
    world::event_manager = new EventManager();
 
+   world::camera = world::entity_manager->CreateEntity();
+   world::entity_manager->AddComponent(world::camera, Transform2D{Vector2{0,0},Vector2{0,0}});
+
    Image* grangle = game::resource_manager->LoadImage("./res/tex/grangle.jpg");
 
    scug = world::entity_manager->CreateEntity();
@@ -36,20 +41,20 @@ World::World() {
    scug2 = world::entity_manager->CreateEntity();
    world::entity_manager->AddComponent(scug2, Sprite{grangle});
    world::entity_manager->AddComponent(scug2, Transform2D{Vector2{75,75},Vector2{50,50}});
-   world::entity_manager->AddComponent(scug2, Velocity{Vector2{5,5}});
+   //world::entity_manager->AddComponent(scug2, Velocity{Vector2{5,5}});
    //SDL_Log("scug2 %d\n", scug2);
    
-   world::event_manager->connect<CollisionEvent>([](const CollisionEvent& event) {
-      SDL_Log("Collision between %d and %d", event.entityA, event.entityB);
-   });
+   // world::event_manager->connect<CollisionEvent>([](const CollisionEvent& event) {
+   //    SDL_Log("Collision between %d and %d", event.entityA, event.entityB);
+   // });
 
-   world::event_manager->connect<InputEvent>([](const InputEvent& event) {
-      if (event.type == InputEventType::KeyPress) {
-         SDL_Log("%s pressed!", SDL_GetKeyName(event.keycode));
-      } else if (event.type == InputEventType::KeyRelease) {
-         SDL_Log("%s released!", SDL_GetKeyName(event.keycode));
-      }
-   });
+   // world::event_manager->connect<InputEvent>([](const InputEvent& event) {
+   //    if (event.type == InputEventType::KeyPress) {
+   //       SDL_Log("%s pressed!", SDL_GetKeyName(event.keycode));
+   //    } else if (event.type == InputEventType::KeyRelease) {
+   //       SDL_Log("%s released!", SDL_GetKeyName(event.keycode));
+   //    }
+   // });
 }
 
 void World::Update() {
@@ -74,6 +79,7 @@ void World::Update() {
       position->x -= SCUG_SPEED*game::delta_time;
    }
 
+   world::entity_manager->GetComponent<Transform2D>(world::camera)->position = world::entity_manager->GetComponent<Transform2D>(world::camera)->position.Lerp(*position, 1 - pow(0.9, (60.0f / (1.0f / game::delta_time))));
 
    rendering_system->Update();
    physics_system->Update();  
