@@ -1,12 +1,16 @@
+/*
+ * rendering.cpp
+ */
+
 #include "rendering.h"
 #include "../../game.h"
 
-void RenderingSystem::Update(float delta_time) {
+void RenderingSystem::Update() {
     SDL_SetRenderDrawColor(game::renderer, 255, 255, 255, 255);
     SDL_RenderClear(game::renderer);
 
     for (Entity entity : world::entity_manager->GetEntitiesWithComponent<Sprite>()) {
-        if(world::entity_manager->GetComponent<Transform2D>(entity)){
+        if(world::entity_manager->GetComponent<Transform2D>(entity)) {
             Draw(entity);
         }
     }

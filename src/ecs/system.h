@@ -5,9 +5,10 @@
 
 #pragma once
 
-#include "entitymanager.h"
+#include "entitymanager.h"  
+#include "events.h"
 
 class System {
     public:
-        virtual void Update(float delta_time) = 0;
+        virtual void Update() = 0; // Mark function as purely virtual
 };
