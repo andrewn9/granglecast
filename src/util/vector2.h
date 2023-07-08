@@ -28,6 +28,11 @@ struct Vector2 {
         return {x * scalar, y * scalar};
     }
 
+    // Scalar multiplication
+    Vector2 operator*(const Vector2& other) const {
+        return {x * other.x, y * other.y};
+    }
+
     // Scalar division
     Vector2 operator/(float scalar) const {
         return {x / scalar, y / scalar};

@@ -4,6 +4,7 @@
 
 #include "rendering.h"
 #include "../../game.h"
+#include <math.h>
 
 void RenderingSystem::Update() {
     SDL_SetRenderDrawColor(game::renderer, 255, 255, 255, 255);
@@ -22,8 +23,12 @@ void RenderingSystem::Draw(Entity entity) {
     Image* image = world::entity_manager->GetComponent<Sprite>(entity)->image;
     Transform2D* transform = world::entity_manager->GetComponent<Transform2D>(entity);
 
-    Vector2 position = transform->position - world::entity_manager->GetComponent<Transform2D>(world::camera)->position - Vector2{-WINDOW_WIDTH/2,-WINDOW_HEIGHT/2};
-    Vector2 size = transform->size;
+    Transform2D* camera = world::entity_manager->GetComponent<Transform2D>(world::camera);
+    Vector2 scale = Vector2{WINDOW_WIDTH/camera->size.x, WINDOW_HEIGHT/camera->size.y};
+    Vector2 position = scale * (transform->position - Vector2{round(camera->position.x),round(camera->position.y)}) - Vector2{-WINDOW_WIDTH/2,-WINDOW_HEIGHT/2};
+    position.x = round(position.x);
+    position.y = round(position.y);
+    Vector2 size = transform->size * scale;
 
     // Calculate the centered position
     int centerX = position.x - static_cast<int>(size.x / 2);
