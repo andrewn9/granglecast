@@ -13,6 +13,7 @@ namespace game {
     double delta_time = 1.0f/60;
     bool is_running = true;
     double const physics_time = 1.0f/60;
+    double time = 0.0f;
 }
 
 bool Game::Initialize() {
@@ -56,6 +57,7 @@ void Game::RunLoop() {
     while (game::is_running) {
         game::delta_time = (double) (SDL_GetPerformanceCounter() - last_tick) / SDL_GetPerformanceFrequency();
         last_tick = SDL_GetPerformanceCounter();
+        game::time += game::delta_time;
 
         accumulator += game::delta_time;
 

@@ -27,6 +27,7 @@ namespace game {
     extern double delta_time;
     extern double const physics_time;
     extern bool is_running;
+    extern double time;
 }
 
 class Game {
