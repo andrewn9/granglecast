@@ -19,6 +19,7 @@ namespace world{
    Entity camera;
 }
 
+Entity scugcat;
 std::vector<Entity> scugs;
 
 System* input_system = new InputSystem();
@@ -26,51 +27,72 @@ System* rendering_system = new RenderingSystem();
 System* physics_system = new PhysicsSystem();
 
 Image* grangle;
+Image* pobe;
 
 std::random_device rd;
 std::mt19937 generator(rd());
 
 void CreateScug() {
-    Entity scug = world::entity_manager->CreateEntity();
-    world::entity_manager->AddComponent(scug, Sprite{ grangle });
+   Entity scug = world::entity_manager->CreateEntity();
+   world::entity_manager->AddComponent(scug, Sprite{ pobe });
 
-    std::uniform_int_distribution<int> pX(0, WINDOW_WIDTH);
-    std::uniform_int_distribution<int> pY(0, WINDOW_HEIGHT);
-    std::uniform_int_distribution<int> pS(0, 250);
+   std::uniform_int_distribution<int> pX(0, WINDOW_WIDTH);
+   std::uniform_int_distribution<int> pY(0, WINDOW_HEIGHT);
+   std::uniform_int_distribution<int> pS(0, 250);
 
-    world::entity_manager->AddComponent(scug, Transform2D{Vector2{pX(generator), pY(generator)}, Vector2{pS(generator), pS(generator)}});
+   world::entity_manager->AddComponent(scug, 
+      Transform2D {
+         Vector2{static_cast<float>(pX(generator)), static_cast<float>(pY(generator))}, 
+         Vector2{static_cast<float>(pS(generator)), static_cast<float>(pS(generator))}
+      }
+   );
 
-    SDL_Log("Scug created. %d", scug);
-    scugs.push_back(scug);
+   SDL_Log("Scug created. %d", scug);
+   scugs.push_back(scug);
 }
 
 void DeleteScug() {
    std::uniform_int_distribution<int> id(0, scugs.size() - 1);
-   Entity entity = scugs[id(generator)];
-
-   SDL_Log("Scug deletion. %d", entity);
-   world::entity_manager->RemoveEntity(scugs[entity]);  
+   int rand = id(generator);
+   world::entity_manager->RemoveEntity(scugs[rand]);
+   scugs.erase(scugs.begin() + rand);
 }
 
-void HandleKeys(const InputEvent& event) { 
-   if (event.type == InputEventType::KeyPress && event.keycode == SDLK_f) {
-      world::entity_manager->PrintData();
-   }
-   if (event.type == InputEventType::KeyPress && event.keycode == SDLK_r) {
-      DeleteScug();
-   }
-   if (event.type == InputEventType::KeyPress && event.keycode == SDLK_t) {
-      CreateScug();
-   }
-   if (event.type == InputEventType::KeyPress && event.keycode == SDLK_1) {
-      world::entity_manager->GetComponent<Transform2D>(world::camera)->size = {WINDOW_WIDTH, WINDOW_HEIGHT};
-   }
-   if (event.type == InputEventType::KeyPress && event.keycode == SDLK_2) {
-      world::entity_manager->GetComponent<Transform2D>(world::camera)->size = {WINDOW_WIDTH/2, WINDOW_HEIGHT/2};
-   }
+void HandleKeys(const KeyboardEvent& event) {
+   if (event.type == InputBegan) {
+      if (event.keycode == SDLK_f) {
+         world::entity_manager->PrintData();
+      }
+      if (event.keycode == SDLK_r) {
+         DeleteScug();
+      }
+      if (event.keycode == SDLK_t) {
+         CreateScug();
+      } 
+      if (event.keycode == SDLK_1) {
+         world::entity_manager->GetComponent<Transform2D>(world::camera)->size = { WINDOW_WIDTH, WINDOW_HEIGHT };
+      }
+      if (event.keycode == SDLK_2) {
+         world::entity_manager->GetComponent<Transform2D>(world::camera)->size = { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
+      }
+   }  
 }
 
-Entity scugcat;
+void HandleMouse(const MouseEvent& event) {
+   if (event.type == InputBegan) {
+      switch (event.mouse_button) {
+         case 1:
+            SDL_Log("Left clicked at: %s(%f, %f)", "Vector2", event.position.x, event.position.y);
+            break;
+         case 2:
+            SDL_Log("Middle clicked at: %s(%f, %f)", "Vector2", event.position.x, event.position.y);
+            break;
+         case 3:
+            SDL_Log("Right clicked at: %s(%f, %f)", "Vector2", event.position.x, event.position.y);
+            break;
+      }
+   }
+}
 
 World::World() {
    world::entity_manager = new EntityManager(); 
@@ -80,12 +102,14 @@ World::World() {
    world::entity_manager->AddComponent(world::camera, Transform2D{Vector2{0,0},Vector2{WINDOW_WIDTH,WINDOW_HEIGHT}});
 
    grangle = game::resource_manager->LoadImage("./res/tex/grangle.jpg");
+   pobe = game::resource_manager->LoadImage("./res/tex/pobe.png");
 
    scugcat = world::entity_manager->CreateEntity();
    world::entity_manager->AddComponent(scugcat, Sprite{ grangle });
    world::entity_manager->AddComponent(scugcat, Transform2D{Vector2{0,0}, Vector2{50,50}});
 
-   world::event_manager->connect<InputEvent>(HandleKeys);
+   world::event_manager->connect<KeyboardEvent>(HandleKeys);
+   world::event_manager->connect<MouseEvent>(HandleMouse);
 }
 
 void World::FixedUpdate() {
@@ -111,6 +135,6 @@ void World::Update() {
       position->x -= SCUG_SPEED*game::delta_time;
    }
 
-   world::entity_manager->GetComponent<Transform2D>(world::camera)->size = {sin(game::time) * WINDOW_WIDTH / 2 + WINDOW_WIDTH, cos(game::time) * WINDOW_HEIGHT / 2 + WINDOW_HEIGHT};
+   world::entity_manager->GetComponent<Transform2D>(world::camera)->size = { static_cast<float>(sin(game::time)) * WINDOW_WIDTH / 2.0f + WINDOW_WIDTH, static_cast<float>(cos(game::time)) * WINDOW_HEIGHT / 2.0f + WINDOW_HEIGHT };
    rendering_system->Update();
 }

@@ -9,12 +9,18 @@ struct CollisionEvent {
     Entity entityB;
 };
 
-enum class InputEventType {
-    KeyPress,
-    KeyRelease
+enum InputEventType {
+    InputBegan,
+    InputEnded
 };
 
-struct InputEvent {
+struct KeyboardEvent {
     InputEventType type;
     SDL_Keycode keycode;
+};
+
+struct MouseEvent {
+    InputEventType type;
+    Vector2 position;
+    Uint8 mouse_button;
 };

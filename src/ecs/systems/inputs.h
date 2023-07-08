@@ -18,5 +18,7 @@ class InputSystem : public System {
         void Update();
     private:
         void HandleKeyEvent(SDL_Keycode key, InputEventType type);
+
+        void HandleMouseEvent(Uint8 button, InputEventType type, int x, int y);
 };
 
