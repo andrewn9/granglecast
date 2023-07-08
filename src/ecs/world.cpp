@@ -62,6 +62,12 @@ void HandleKeys(const InputEvent& event) {
    if (event.type == InputEventType::KeyPress && event.keycode == SDLK_t) {
       CreateScug();
    }
+   if (event.type == InputEventType::KeyPress && event.keycode == SDLK_1) {
+      world::entity_manager->GetComponent<Transform2D>(world::camera)->size = {WINDOW_WIDTH, WINDOW_HEIGHT};
+   }
+   if (event.type == InputEventType::KeyPress && event.keycode == SDLK_2) {
+      world::entity_manager->GetComponent<Transform2D>(world::camera)->size = {WINDOW_WIDTH/2, WINDOW_HEIGHT/2};
+   }
 }
 
 Entity scugcat;
@@ -71,7 +77,7 @@ World::World() {
    world::event_manager = new EventManager();
 
    world::camera = world::entity_manager->CreateEntity();
-   world::entity_manager->AddComponent(world::camera, Transform2D{Vector2{0,0},Vector2{0,0}});
+   world::entity_manager->AddComponent(world::camera, Transform2D{Vector2{0,0},Vector2{WINDOW_WIDTH,WINDOW_HEIGHT}});
 
    grangle = game::resource_manager->LoadImage("./res/tex/grangle.jpg");
 
@@ -104,5 +110,7 @@ void World::Update() {
    if (inputs::held_keys.find(SDLK_a) != inputs::held_keys.end()) {
       position->x -= SCUG_SPEED*game::delta_time;
    }
+
+   world::entity_manager->GetComponent<Transform2D>(world::camera)->size = {sin(game::time) * WINDOW_WIDTH / 2 + WINDOW_WIDTH, cos(game::time) * WINDOW_HEIGHT / 2 + WINDOW_HEIGHT};
    rendering_system->Update();
 }
