@@ -69,4 +69,8 @@ struct Vector2 {
     Vector2 Lerp(const Vector2& other, const float factor) {
         return Vector2{x + (other.x - x) * factor, y + (other.y - y) * factor};
     }
+
+    float DotProduct(const Vector2& other) {
+        return x * other.x + y * other.y;
+    }
 };
