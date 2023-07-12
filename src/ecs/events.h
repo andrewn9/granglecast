@@ -7,6 +7,8 @@
 struct CollisionEvent {
     Entity entityA;
     Entity entityB;
+    Vector2 normal;
+    float depth;
 };
 
 enum InputEventType {
