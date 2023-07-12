@@ -19,6 +19,12 @@ struct Velocity {
     Vector2 velocity;
 };
 
+struct Collider {
+    bool anchored;
+    float mass;
+    float friction;
+};
+
 struct Sprite {
     Image* image;
 };

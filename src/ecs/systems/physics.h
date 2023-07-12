@@ -10,5 +10,5 @@
 class PhysicsSystem : public System {
     public:
         void Update();
-        bool AABB(Entity entityA, Entity entityB);
+        void AABB(Entity entityA, Entity entityB);
 };
