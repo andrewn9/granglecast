@@ -23,6 +23,7 @@ struct Collider {
     bool anchored;
     float mass;
     float friction;
+    float restitution; // Elasticity (0-1) Rigid - Elastic
 };
 
 struct Sprite {
