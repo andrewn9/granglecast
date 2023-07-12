@@ -36,14 +36,43 @@ void CreateScug() {
    Entity scug = world::entity_manager->CreateEntity();
    world::entity_manager->AddComponent(scug, Sprite{ pobe });
 
-   std::uniform_int_distribution<int> pX(0, WINDOW_WIDTH);
-   std::uniform_int_distribution<int> pY(0, WINDOW_HEIGHT);
+   std::uniform_int_distribution<int> pX(WINDOW_HEIGHT/-2, WINDOW_WIDTH/2);
+   std::uniform_int_distribution<int> pY(WINDOW_HEIGHT/-2, WINDOW_HEIGHT/2);
    std::uniform_int_distribution<int> pS(0, 250);
 
    world::entity_manager->AddComponent(scug, 
       Transform2D {
          Vector2{static_cast<float>(pX(generator)), static_cast<float>(pY(generator))}, 
          Vector2{static_cast<float>(pS(generator)), static_cast<float>(pS(generator))}
+      }
+   );
+   world::entity_manager->AddComponent(scug, 
+      Collider {
+         true,
+         0,
+         0
+      }
+   );
+
+   SDL_Log("Scug created. %d", scug);
+   scugs.push_back(scug);
+}
+
+void CreateScug(float x, float y, float w, float h) {
+   Entity scug = world::entity_manager->CreateEntity();
+   world::entity_manager->AddComponent(scug, Sprite{ pobe });
+
+   world::entity_manager->AddComponent(scug, 
+      Transform2D {
+         Vector2{x, y}, 
+         Vector2{w, h}
+      }
+   );
+   world::entity_manager->AddComponent(scug, 
+      Collider {
+         true,
+         0,
+         0
       }
    );
 
@@ -94,6 +123,15 @@ void HandleMouse(const MouseEvent& event) {
    }
 }
 
+void HandleCollision(const CollisionEvent& event) {
+   if (event.entityA == 1){
+      world::entity_manager->GetComponent<Transform2D>(event.entityA)->position += event.normal * event.depth;
+      if (event.normal.y != 0) {
+         world::entity_manager->GetComponent<Velocity>(event.entityA)->velocity = Vector2{world::entity_manager->GetComponent<Velocity>(event.entityA)->velocity.x, 0};
+      }
+   }
+}
+
 World::World() {
    world::entity_manager = new EntityManager(); 
    world::event_manager = new EventManager();
@@ -107,9 +145,14 @@ World::World() {
    scugcat = world::entity_manager->CreateEntity();
    world::entity_manager->AddComponent(scugcat, Sprite{ grangle });
    world::entity_manager->AddComponent(scugcat, Transform2D{Vector2{0,0}, Vector2{50,50}});
+   world::entity_manager->AddComponent(scugcat, Velocity{Vector2{0,0}});
+   world::entity_manager->AddComponent(scugcat, Collider{false, 0, 0});
 
    world::event_manager->connect<KeyboardEvent>(HandleKeys);
    world::event_manager->connect<MouseEvent>(HandleMouse);
+   world::event_manager->connect<CollisionEvent>(HandleCollision);
+
+   CreateScug(-100, 100, 200, 20);
 }
 
 void World::FixedUpdate() {
@@ -135,6 +178,5 @@ void World::Update() {
       position->x -= SCUG_SPEED*game::delta_time;
    }
 
-   world::entity_manager->GetComponent<Transform2D>(world::camera)->size = { static_cast<float>(sin(game::time)) * WINDOW_WIDTH / 2.0f + WINDOW_WIDTH, static_cast<float>(cos(game::time)) * WINDOW_HEIGHT / 2.0f + WINDOW_HEIGHT };
    rendering_system->Update();
 }
