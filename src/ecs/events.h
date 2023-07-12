@@ -5,8 +5,8 @@
 #pragma once
 
 struct CollisionEvent {
-    Entity entityA;
-    Entity entityB;
+    Entity entity_a;
+    Entity entity_b;
     Vector2 normal;
     float depth;
 };

@@ -11,7 +11,7 @@
 
 #include <random>
 
-#define SCUG_SPEED   50
+#define SCUG_SPEED   2
 
 namespace world{
    EntityManager* entity_manager;
@@ -50,7 +50,13 @@ void CreateScug() {
       Collider {
          true,
          0,
+         0,
          0
+      }
+   );
+   world::entity_manager->AddComponent(scug, 
+      Velocity {
+         Vector2{0,0}
       }
    );
 
@@ -70,9 +76,15 @@ void CreateScug(float x, float y, float w, float h) {
    );
    world::entity_manager->AddComponent(scug, 
       Collider {
-         true,
-         0,
-         0
+         true, // Anchored
+         0,    // Mass
+         0,    // Friction
+         0     // Restitution
+      }
+   );
+   world::entity_manager->AddComponent(scug, 
+      Velocity {
+         Vector2{0,0}
       }
    );
 
@@ -124,12 +136,12 @@ void HandleMouse(const MouseEvent& event) {
 }
 
 void HandleCollision(const CollisionEvent& event) {
-   if (event.entityA == 1){
-      world::entity_manager->GetComponent<Transform2D>(event.entityA)->position += event.normal * event.depth;
-      if (event.normal.y != 0) {
-         world::entity_manager->GetComponent<Velocity>(event.entityA)->velocity = Vector2{world::entity_manager->GetComponent<Velocity>(event.entityA)->velocity.x, 0};
-      }
-   }
+   // if (event.entity_a == 1){
+   //    world::entity_manager->GetComponent<Transform2D>(event.entity_a)->position += event.normal * event.depth;
+   //    if (event.normal.y != 0) {
+   //       world::entity_manager->GetComponent<Velocity>(event.entity_a)->velocity = Vector2{world::entity_manager->GetComponent<Velocity>(event.entity_a)->velocity.x, 0};
+   //    }
+   // }
 }
 
 World::World() {
@@ -146,7 +158,7 @@ World::World() {
    world::entity_manager->AddComponent(scugcat, Sprite{ grangle });
    world::entity_manager->AddComponent(scugcat, Transform2D{Vector2{0,0}, Vector2{50,50}});
    world::entity_manager->AddComponent(scugcat, Velocity{Vector2{0,0}});
-   world::entity_manager->AddComponent(scugcat, Collider{false, 0, 0});
+   world::entity_manager->AddComponent(scugcat, Collider{false, 10, 0, 0});
 
    world::event_manager->connect<KeyboardEvent>(HandleKeys);
    world::event_manager->connect<MouseEvent>(HandleMouse);
@@ -156,27 +168,26 @@ World::World() {
 }
 
 void World::FixedUpdate() {
+   Vector2* velocity = &world::entity_manager->GetComponent<Velocity>(scugcat)->velocity;
+
+   if (inputs::held_keys.find(SDLK_w) != inputs::held_keys.end()) {
+      velocity->y = -SCUG_SPEED;
+   }
+   if (inputs::held_keys.find(SDLK_s) != inputs::held_keys.end()) {
+      velocity->y = SCUG_SPEED;
+   }
+   if (inputs::held_keys.find(SDLK_d) != inputs::held_keys.end()) {
+      velocity->x = SCUG_SPEED;
+   }
+   if (inputs::held_keys.find(SDLK_a) != inputs::held_keys.end()) {
+      velocity->x = -SCUG_SPEED;
+   }
+   
    physics_system->Update();
    world::entity_manager->GetComponent<Transform2D>(world::camera)->position = (world::entity_manager->GetComponent<Transform2D>(world::camera)->position).Lerp(world::entity_manager->GetComponent<Transform2D>(scugcat)->position, 0.1f);
 }
 
 void World::Update() {
    input_system->Update();
-
-   Vector2* position = &world::entity_manager->GetComponent<Transform2D>(scugcat)->position;
-
-   if (inputs::held_keys.find(SDLK_w) != inputs::held_keys.end()) {
-      position->y -= SCUG_SPEED*game::delta_time;
-   }
-   if (inputs::held_keys.find(SDLK_s) != inputs::held_keys.end()) {
-      position->y += SCUG_SPEED*game::delta_time;
-   }
-   if (inputs::held_keys.find(SDLK_d) != inputs::held_keys.end()) {
-      position->x += SCUG_SPEED*game::delta_time;
-   }
-   if (inputs::held_keys.find(SDLK_a) != inputs::held_keys.end()) {
-      position->x -= SCUG_SPEED*game::delta_time;
-   }
-
    rendering_system->Update();
 }
