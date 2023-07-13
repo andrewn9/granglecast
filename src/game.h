@@ -18,8 +18,6 @@
 
 #define WINDOW_NAME     "granglecast"
 
-#define MAX_ENTITIES    100
-
 namespace game {
     extern ResourceManager* resource_manager;
     extern SDL_Window* window;

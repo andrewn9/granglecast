@@ -47,8 +47,6 @@ class EntityManager {
         void PrintData() const;
 
     private:
-        const uint32_t MAX_ENTITIES = 100;
-
         uint32_t entities = 0;
         
         // Queue of ids to be reused after an entity is removed
@@ -64,6 +62,9 @@ class EntityManager {
 
 template<typename Component>
 void EntityManager::AddComponent(Entity entity, Component&& component) {
+    if (entity == -1)
+        return;
+
     std::type_index component_type = typeid(Component);
     
     // Map the component to the entity
@@ -91,6 +92,9 @@ const std::vector<Entity>& EntityManager::GetEntitiesWithComponent() const {
 
 template<typename Component>
 Component* EntityManager::GetComponent(Entity entity) const {
+    if (entity == -1)
+        return nullptr;
+
     std::type_index component_type = typeid(Component);
 
     // Check if the entity exists
@@ -112,6 +116,9 @@ Component* EntityManager::GetComponent(Entity entity) const {
 template<typename Component>
 void EntityManager::RemoveComponent(Entity entity)
 {
+    if (entity == -1)
+        return;
+
     std::type_index component_type = typeid(Component);
 
     // Check if the entity exists

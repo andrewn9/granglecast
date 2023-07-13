@@ -4,11 +4,11 @@
  */
 
 #include "entitymanager.h"
+#include "world.h"
 #include <string>
 
 // Returns a newly created entity with a unique id 
 Entity EntityManager::CreateEntity() {
-
     if (inactive_entities.empty()) {
         // Keep entities in range
         if (entities < MAX_ENTITIES) {
@@ -29,6 +29,9 @@ Entity EntityManager::CreateEntity() {
 }
 
 void EntityManager::RemoveEntity(Entity entity) {
+    if (entity == -1)
+        return;
+
     // Store the component types to be removed
     std::vector<std::type_index> componentTypesToRemove;
 
@@ -56,6 +59,9 @@ void EntityManager::RemoveEntity(Entity entity) {
 
 
 void EntityManager::RemoveComponentByType(Entity entity, const std::type_index& component_type) {
+    if (entity == -1)
+        return;
+
     // Check if the entity exists
     auto entity_iterator = components.find(entity);
     if (entity_iterator != components.end()) {
@@ -93,7 +99,7 @@ void EntityManager::PrintData() const {
     for (const auto& indexPair : component_index) {
         std::type_index component_type = indexPair.first;
         const auto& entities = indexPair.second;
-
+    
         std::string entitiesString;
         for (const auto& entity : entities) {
             entitiesString += std::to_string(entity) + ", ";
