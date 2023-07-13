@@ -39,6 +39,7 @@ void CreateScug() {
    std::uniform_int_distribution<int> pX(WINDOW_HEIGHT/-2, WINDOW_WIDTH/2);
    std::uniform_int_distribution<int> pY(WINDOW_HEIGHT/-2, WINDOW_HEIGHT/2);
    std::uniform_int_distribution<int> pS(0, 250);
+   std::uniform_int_distribution<int> velocity(-100, 100);
 
    world::entity_manager->AddComponent(scug, 
       Transform2D {
@@ -56,7 +57,7 @@ void CreateScug() {
    );
    world::entity_manager->AddComponent(scug, 
       Velocity {
-         Vector2{0,0}
+         Vector2{static_cast<float>(velocity(generator)), static_cast<float>(velocity(generator))} / 100
       }
    );
 
@@ -170,6 +171,8 @@ World::World() {
 void World::FixedUpdate() {
    Vector2* velocity = &world::entity_manager->GetComponent<Velocity>(scugcat)->velocity;
 
+   // velocity->x = 0;
+   // velocity->y = 0;
    if (inputs::held_keys.find(SDLK_w) != inputs::held_keys.end()) {
       velocity->y = -SCUG_SPEED;
    }
