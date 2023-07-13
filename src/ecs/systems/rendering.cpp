@@ -22,6 +22,13 @@ void RenderingSystem::Draw(Entity entity) {
     Transform2D* transform = world::entity_manager->GetComponent<Transform2D>(entity);
     Transform2D* camera = world::entity_manager->GetComponent<Transform2D>(world::camera);
 
+    if (transform->position.x + transform->size.x/2 <= camera->position.x - camera->size.x/2 ||
+        transform->position.x - transform->size.x/2 >= camera->position.x + camera->size.x/2 ||
+        transform->position.y + transform->size.y/2 <= camera->position.y - camera->size.y/2 ||
+        transform->position.y - transform->size.y/2 >= camera->position.y + camera->size.y/2) {
+        return;
+    }
+
     Vector2 scale = Vector2{WINDOW_WIDTH/camera->size.x, WINDOW_HEIGHT/camera->size.y};
     Vector2 position = scale * (transform->position - Vector2{round(camera->position.x),round(camera->position.y)}) - Vector2{-WINDOW_WIDTH/2,-WINDOW_HEIGHT/2};
     position.x = round(position.x);
