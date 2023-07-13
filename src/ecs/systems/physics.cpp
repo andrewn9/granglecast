@@ -11,10 +11,11 @@ void PhysicsSystem::Update() {
         if (world::entity_manager->GetComponent<Velocity>(entity_a)) {
             Vector2* velocity = &world::entity_manager->GetComponent<Velocity>(entity_a)->velocity;
             Collider* collider = world::entity_manager->GetComponent<Collider>(entity_a);
+
+            world::entity_manager->GetComponent<Transform2D>(entity_a)->position += *velocity;
             
             // Ravity
             if (!(collider && collider->anchored)) {
-                world::entity_manager->GetComponent<Transform2D>(entity_a)->position += *velocity;
                 velocity->y += 0.5;
             }
         }
