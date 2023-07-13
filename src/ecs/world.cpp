@@ -170,6 +170,8 @@ World::World() {
 void World::FixedUpdate() {
    Vector2* velocity = &world::entity_manager->GetComponent<Velocity>(scugcat)->velocity;
 
+   // velocity->x = 0;
+   // velocity->y = 0;
    if (inputs::held_keys.find(SDLK_w) != inputs::held_keys.end()) {
       velocity->y = -SCUG_SPEED;
    }
