@@ -39,14 +39,6 @@ void RenderingSystem::Draw(Entity entity) {
     scaledRect.w = static_cast<int>(size.x);
     scaledRect.h = static_cast<int>(size.y);
 
-    // Do not render if off screen
-    if (!(scaledRect->x < camera->x + camera->w &&
-    scaledRect->x + scaledRect->w > camera->x &&
-    scaledRect->y < camera->y + camera->h &&
-    scaledRect->y + scaledRect->h > camera->y)) {
-        return;
-    }
-
     SDL_RenderCopy(image->renderer, image->texture, &(image->srect), &scaledRect);
 }
 

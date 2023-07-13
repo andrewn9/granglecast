@@ -165,7 +165,7 @@ World::World() {
    world::event_manager->connect<MouseEvent>(HandleMouse);
    world::event_manager->connect<CollisionEvent>(HandleCollision);
 
-   CreateScug(0, 100, 200, 20);
+   CreateScug(0, 5, 200, 10);
 }
 
 void World::FixedUpdate() {
