@@ -50,7 +50,7 @@ void CreateScug() {
    world::entity_manager->AddComponent(scug, 
       Collider {
          true,
-         0,
+         1,
          0,
          0
       }
@@ -165,7 +165,7 @@ World::World() {
    world::event_manager->connect<MouseEvent>(HandleMouse);
    world::event_manager->connect<CollisionEvent>(HandleCollision);
 
-   CreateScug(-100, 100, 200, 20);
+   CreateScug(0, 100, 200, 20);
 }
 
 void World::FixedUpdate() {

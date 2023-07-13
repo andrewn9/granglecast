@@ -11,9 +11,7 @@ void RenderingSystem::Update() {
     SDL_RenderClear(game::renderer);
 
     for (Entity entity : world::entity_manager->GetEntitiesWithComponent<Sprite>()) {
-        if(world::entity_manager->GetComponent<Transform2D>(entity)) {
-            Draw(entity);
-        }
+        Draw(entity);
     }
 
     SDL_RenderPresent(game::renderer);
@@ -22,8 +20,8 @@ void RenderingSystem::Update() {
 void RenderingSystem::Draw(Entity entity) {
     Image* image = world::entity_manager->GetComponent<Sprite>(entity)->image;
     Transform2D* transform = world::entity_manager->GetComponent<Transform2D>(entity);
-
     Transform2D* camera = world::entity_manager->GetComponent<Transform2D>(world::camera);
+
     Vector2 scale = Vector2{WINDOW_WIDTH/camera->size.x, WINDOW_HEIGHT/camera->size.y};
     Vector2 position = scale * (transform->position - Vector2{round(camera->position.x),round(camera->position.y)}) - Vector2{-WINDOW_WIDTH/2,-WINDOW_HEIGHT/2};
     position.x = round(position.x);
@@ -40,6 +38,14 @@ void RenderingSystem::Draw(Entity entity) {
     scaledRect.y = centerY;
     scaledRect.w = static_cast<int>(size.x);
     scaledRect.h = static_cast<int>(size.y);
+
+    // Do not render if off screen
+    if (!(scaledRect->x < camera->x + camera->w &&
+    scaledRect->x + scaledRect->w > camera->x &&
+    scaledRect->y < camera->y + camera->h &&
+    scaledRect->y + scaledRect->h > camera->y)) {
+        return;
+    }
 
     SDL_RenderCopy(image->renderer, image->texture, &(image->srect), &scaledRect);
 }

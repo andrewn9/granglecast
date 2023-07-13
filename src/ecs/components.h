@@ -29,4 +29,3 @@ struct Collider {
 struct Sprite {
     Image* image;
 };
-
