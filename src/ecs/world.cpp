@@ -133,9 +133,12 @@ void HandleMouse(const MouseEvent& event) {
    if (event.type == InputBegan) {
       switch (event.mouse_button) {
          case 1:
+         {
             SDL_Log("Left clicked at: %s(%f, %f)", "Vector2", event.position.x, event.position.y);
-            CreateScug(event.position.x + world::entity_manager->GetComponent<Transform2D>(world::camera)->position.x - world::entity_manager->GetComponent<Transform2D>(world::camera)->size.x / 2, event.position.y + world::entity_manager->GetComponent<Transform2D>(world::camera)->position.y - world::entity_manager->GetComponent<Transform2D>(world::camera)->size.y/2, 50, 50, false, 10);
+            Transform2D& c_transform = *world::entity_manager->GetComponent<Transform2D>(world::camera);
+            CreateScug((event.position.x * (c_transform.size.x / WINDOW_WIDTH) + c_transform.position.x - c_transform.size.x / 2), (event.position.y* (c_transform.size.y / WINDOW_HEIGHT) + c_transform.position.y - c_transform.size.y/2) , 50, 50, false, 10);
             break;
+         }
          case 2:
             SDL_Log("Middle clicked at: %s(%f, %f)", "Vector2", event.position.x, event.position.y);
             break;
