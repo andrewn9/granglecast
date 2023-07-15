@@ -67,8 +67,6 @@ void Game::RunLoop() {
         } 
 
         world->Update();
-
-        SDL_Delay(16);
     }
     Shutdown();
 }

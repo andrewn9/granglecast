@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <math.h>
+
 struct Vector2 {
     float x;
     float y;
@@ -72,5 +74,14 @@ struct Vector2 {
 
     float DotProduct(const Vector2& other) {
         return x * other.x + y * other.y;
+    }
+
+    Vector2& Normalize() {
+        float mag = sqrt(x * x + y * y);
+        if (mag != 0) {
+            x /= mag;
+            y /= mag;
+        }
+        return *this;
     }
 };
