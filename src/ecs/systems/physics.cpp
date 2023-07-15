@@ -12,17 +12,6 @@ void PhysicsSystem::Update() {
     for (int i = 0; i < entities.size(); i++) {
         Entity entity_a = entities[i];
 
-        if (world::entity_manager->GetComponent<Velocity>(entity_a)) {
-            Vector2* velocity = &world::entity_manager->GetComponent<Velocity>(entity_a)->velocity;
-            Collider* collider = world::entity_manager->GetComponent<Collider>(entity_a);
-
-            world::entity_manager->GetComponent<Transform2D>(entity_a)->position += *velocity;
-
-            if (!(collider && collider->anchored)) {
-                velocity->y += 0.5;
-            }
-        }
-
         for (int j = i + 1; j < entities.size(); j++) {
             Entity entity_b = entities[j];
 
@@ -32,6 +21,17 @@ void PhysicsSystem::Update() {
             }
 
             AABB(entity_a, entity_b);
+        }
+
+        if (world::entity_manager->GetComponent<Velocity>(entity_a)) {
+            Vector2* velocity = &world::entity_manager->GetComponent<Velocity>(entity_a)->velocity;
+            Collider* collider = world::entity_manager->GetComponent<Collider>(entity_a);
+
+            world::entity_manager->GetComponent<Transform2D>(entity_a)->position += *velocity;
+
+            if (!(collider && collider->anchored)) {
+                velocity->y += 0.5;
+            }
         }
     }
 }
@@ -85,7 +85,7 @@ void PhysicsSystem::ResolveCollision(const CollisionEvent& collision_event) {
     float velAlongNormal = relative_velocity.DotProduct(collision_event.normal);
     
     // Do not resolve if velocities are separating
-    if (velAlongNormal <= 0)
+    if (velAlongNormal < 0)
         return;
 
     // Calculate restitution
@@ -94,14 +94,18 @@ void PhysicsSystem::ResolveCollision(const CollisionEvent& collision_event) {
     float a_inv_mass = collider_a.mass == 0 ? 0 : 1 / collider_a.mass;
     float b_inv_mass = collider_b.mass == 0 ? 0 : 1 / collider_b.mass;
     
-    float j = -(1.0 + e) * velAlongNormal;
+    float j = (1.0 + e) * velAlongNormal;
     j /= a_inv_mass + b_inv_mass;
 
     // Apply impulse
     Vector2 impulse = collision_event.normal * j;
     
-    velocity_a.velocity -= impulse * a_inv_mass;
-    velocity_b.velocity += impulse * b_inv_mass;
+    velocity_a.velocity += impulse * a_inv_mass;
+    velocity_b.velocity -= impulse * b_inv_mass;
+
+    SDL_Log("\n");
+    SDL_Log("entity %d x: %f y: %f", entity_a, velocity_a.velocity.x, velocity_a.velocity.y);
+    SDL_Log("entity %d x: %f y: %f", entity_b, velocity_b.velocity.x, velocity_b.velocity.y);
   
     //relative_velocity = velocity_b.velocity - velocity_a.velocity;
 
@@ -134,9 +138,14 @@ void PhysicsSystem::ResolveCollision(const CollisionEvent& collision_event) {
 
     // SDL_Log("friction x: %f y: %f", frictionImpulse.x, frictionImpulse.y);
 
-    velocity_a.velocity = velocity_a.velocity * Vector2{1 - abs(tangent.x * (1 - collider_a.dynamic_friction)), 1 - abs(tangent.x * (1 - collider_a.dynamic_friction))};
+    float dynamicFriction = 1 - sqrt(collider_a.dynamic_friction * collider_a.dynamic_friction + collider_b.dynamic_friction * collider_b.dynamic_friction);
+    Vector2 friction = Vector2{1 - abs(tangent.x * dynamicFriction), 1};
+    //Vector2 friction = Vector2{1 - abs(tangent.x * dynamicFriction), 1 - abs(tangent.y * dynamicFriction)};
 
-    const float percent = 0.5; // usually 20% to 80%
+    velocity_a.velocity = velocity_a.velocity * friction;
+    velocity_b.velocity = velocity_b.velocity * friction;
+
+    const float percent = 1; // usually 20% to 80%
     Vector2 correction = collision_event.normal * ((collision_event.depth / (a_inv_mass + b_inv_mass)) * percent);
 
     world::entity_manager->GetComponent<Transform2D>(entity_a)->position += correction * a_inv_mass;
