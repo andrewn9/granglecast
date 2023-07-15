@@ -101,6 +101,7 @@ void DeleteScug() {
    std::uniform_int_distribution<int> id(0, scugs.size() - 1);
    int rand = id(generator);
    world::entity_manager->RemoveEntity(scugs[rand]);
+   SDL_Log("Scug deleted. %d", scugs[rand]);
    scugs.erase(scugs.begin() + rand);
 }
 
@@ -133,20 +134,23 @@ void HandleMouse(const MouseEvent& event) {
       switch (event.mouse_button) {
          case 1:
             SDL_Log("Left clicked at: %s(%f, %f)", "Vector2", event.position.x, event.position.y);
-            CreateScug(event.position.x + world::entity_manager->GetComponent<Transform2D>(world::camera)->position.x - world::entity_manager->GetComponent<Transform2D>(world::camera)->size.x / 2, event.position.y + world::entity_manager->GetComponent<Transform2D>(world::camera)->position.y - world::entity_manager->GetComponent<Transform2D>(world::camera)->size.y/2, 50, 50, false, 50);
+            CreateScug(event.position.x + world::entity_manager->GetComponent<Transform2D>(world::camera)->position.x - world::entity_manager->GetComponent<Transform2D>(world::camera)->size.x / 2, event.position.y + world::entity_manager->GetComponent<Transform2D>(world::camera)->position.y - world::entity_manager->GetComponent<Transform2D>(world::camera)->size.y/2, 50, 50, false, 10);
             break;
          case 2:
             SDL_Log("Middle clicked at: %s(%f, %f)", "Vector2", event.position.x, event.position.y);
             break;
          case 3:
             SDL_Log("Right clicked at: %s(%f, %f)", "Vector2", event.position.x, event.position.y);
+            for (int i = 0; i < 100; i++) {
+               CreateScug(event.position.x + world::entity_manager->GetComponent<Transform2D>(world::camera)->position.x - world::entity_manager->GetComponent<Transform2D>(world::camera)->size.x / 2, event.position.y + world::entity_manager->GetComponent<Transform2D>(world::camera)->position.y - world::entity_manager->GetComponent<Transform2D>(world::camera)->size.y/2, 50, 50, false, 10);
+            }
             break;
       }
    }
 }
 
 void HandleCollision(const CollisionEvent& event) {
-   if (event.entity_a == 1){
+   if (event.entity_a == 2){
       if (event.normal.y < -0.707) {
          grounded = true;
       }
@@ -157,9 +161,11 @@ World::World() {
    world::entity_manager = new EntityManager(); 
    world::event_manager = new EventManager();
 
+   Entity amogus = world::entity_manager->CreateEntity();
+
    world::camera = world::entity_manager->CreateEntity();
    world::entity_manager->AddComponent(world::camera, Transform2D{Vector2{0,0},Vector2{WINDOW_WIDTH,WINDOW_HEIGHT}});
-
+   
    grangle = game::resource_manager->LoadImage("./res/tex/grangle.jpg");
    pobe = game::resource_manager->LoadImage("./res/tex/pobe.png");
 
@@ -173,9 +179,9 @@ World::World() {
    world::event_manager->connect<MouseEvent>(HandleMouse);
    world::event_manager->connect<CollisionEvent>(HandleCollision);
 
-   CreateScug(0, 200, 5000, 40, true, 0);
-   CreateScug(200, 0, 10, 400, true, 0);
-   CreateScug(100, 100, 10, 200, true, 0);
+   CreateScug(0, 0, 5000, 400, true, 0);
+   // CreateScug(200, 0, 10, 400, true, 0);
+   // CreateScug(100, 100, 10, 200, true, 0);
 }
 
 void World::FixedUpdate() {

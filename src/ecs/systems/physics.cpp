@@ -26,7 +26,8 @@ void PhysicsSystem::Update() {
         for (int j = i + 1; j < entities.size(); j++) {
             Entity entity_b = entities[j];
 
-            if (!world::entity_manager->GetComponent<Collider>(entity_a) || !world::entity_manager->GetComponent<Collider>(entity_b)) {
+            // This is very expensive
+            if (!world::entity_manager->HasComponent<Collider>(entity_a) || !world::entity_manager->HasComponent<Collider>(entity_b)) {
                 continue;
             }
 
@@ -84,7 +85,7 @@ void PhysicsSystem::ResolveCollision(const CollisionEvent& collision_event) {
     float velAlongNormal = relative_velocity.DotProduct(collision_event.normal);
     
     // Do not resolve if velocities are separating
-    if(velAlongNormal <= 0)
+    if (velAlongNormal <= 0)
         return;
 
     // Calculate restitution

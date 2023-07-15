@@ -14,8 +14,6 @@
 #include "events.h"
 #include "eventmanager.h"
 
-#define MAX_ENTITIES    200
-
 namespace world {
     extern EntityManager* entity_manager;
     extern EventManager* event_manager;
