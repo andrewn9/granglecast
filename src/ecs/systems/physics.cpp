@@ -7,25 +7,30 @@
 #include "../world.h"
 
 void PhysicsSystem::Update() {
-    for (Entity entity_a : world::entity_manager->GetEntitiesWithComponent<Transform2D>()) {
+    auto entities = world::entity_manager->GetEntitiesWithComponent<Transform2D>();
+
+    for (int i = 0; i < entities.size(); i++) {
+        Entity entity_a = entities[i];
+
         if (world::entity_manager->GetComponent<Velocity>(entity_a)) {
             Vector2* velocity = &world::entity_manager->GetComponent<Velocity>(entity_a)->velocity;
             Collider* collider = world::entity_manager->GetComponent<Collider>(entity_a);
 
             world::entity_manager->GetComponent<Transform2D>(entity_a)->position += *velocity;
-            
-            // Ravity
+
             if (!(collider && collider->anchored)) {
                 velocity->y += 0.5;
             }
         }
-        for (Entity entity_b : world::entity_manager->GetEntitiesWithComponent<Transform2D>()) {
+
+        for (int j = i + 1; j < entities.size(); j++) {
+            Entity entity_b = entities[j];
+
             if (!world::entity_manager->GetComponent<Collider>(entity_a) || !world::entity_manager->GetComponent<Collider>(entity_b)) {
                 continue;
             }
-            if(entity_a != entity_b) {
-                AABB(entity_a, entity_b);
-            }
+
+            AABB(entity_a, entity_b);
         }
     }
 }
