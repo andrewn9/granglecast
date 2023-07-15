@@ -96,7 +96,40 @@ void PhysicsSystem::ResolveCollision(const CollisionEvent& collision_event) {
     
     velocity_a.velocity -= impulse * a_inv_mass;
     velocity_b.velocity += impulse * b_inv_mass;
+  
+    //relative_velocity = velocity_b.velocity - velocity_a.velocity;
+
+    // SDL_Log("\n");
+    // SDL_Log("relative x: %f y: %f", relative_velocity.x, relative_velocity.y);
+    // SDL_Log("normal x: %f y: %f", collision_event.normal.x, collision_event.normal.y);
+    // SDL_Log("dp: %f", relative_velocity.DotProduct(collision_event.normal));
+    Vector2 tangent = relative_velocity - collision_event.normal * relative_velocity.DotProduct(collision_event.normal);
+    tangent.Normalize();
+    // SDL_Log("tangent x: %f y: %f", tangent.x, tangent.y);
+    // float jt = -relative_velocity.DotProduct(tangent);
+    // jt /= (a_inv_mass + b_inv_mass);
+    // SDL_Log("jt: %f", jt);
+
+    // float sf = SDL_sqrtf(collider_a.static_friction * collider_a.static_friction + collider_b.static_friction * collider_b.static_friction);
+    // SDL_Log("sf: %f", sf);
+    // SDL_Log("j: %f", j);
+
+    // Vector2 frictionImpulse = {0, 0};
+
+    // if (abs(jt) < j * sf) {
+    //     frictionImpulse = tangent * jt;
+    // } else {
+    //     float dynamicFriction = sqrt(collider_a.dynamic_friction * collider_a.dynamic_friction + collider_b.dynamic_friction * collider_b.dynamic_friction);
+    //     frictionImpulse = tangent * j * dynamicFriction;
+    // }
     
+    // velocity_a.velocity -= frictionImpulse * a_inv_mass;
+    // velocity_b.velocity += frictionImpulse * b_inv_mass;
+
+    // SDL_Log("friction x: %f y: %f", frictionImpulse.x, frictionImpulse.y);
+
+    velocity_a.velocity = velocity_a.velocity * Vector2{1 - abs(tangent.x * (1 - collider_a.dynamic_friction)), 1 - abs(tangent.x * (1 - collider_a.dynamic_friction))};
+
     const float percent = 0.5; // usually 20% to 80%
     Vector2 correction = collision_event.normal * ((collision_event.depth / (a_inv_mass + b_inv_mass)) * percent);
 
