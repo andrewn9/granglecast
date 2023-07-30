@@ -48,6 +48,7 @@ void InputSystem::Update() {
 
 // Initializes and fires key event
 void InputSystem::HandleKeyEvent(SDL_Keycode key, InputEventType type) {
+    
     KeyboardEvent key_event;
     key_event.type = type;
     key_event.keycode = key;
