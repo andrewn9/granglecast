@@ -6,8 +6,10 @@
 
 #include "../system.h"
 
-class RenderingSystem : public System {
+class RenderingSystem {
     public:
+        // Update the rendering system
         void Update();
-        void Draw(Entity entity);
+        // Draw the given sprite and transform
+        void Draw(Sprite* sprite, Transform2D* transform);
 };

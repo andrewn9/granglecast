@@ -19,10 +19,3 @@ Image::Image(const char* path, SDL_Renderer* renderer) {
     srect.w = surface->w;
     srect.h = surface->h;
 }
-
-
-
-
-
-
-

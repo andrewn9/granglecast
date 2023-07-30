@@ -10,16 +10,38 @@ void RenderingSystem::Update() {
     SDL_SetRenderDrawColor(game::renderer, 255, 255, 255, 255);
     SDL_RenderClear(game::renderer);
 
-    for (Entity entity : world::entity_manager->GetEntitiesWithComponent<Sprite>()) {
-        Draw(entity);
+    SparseSet<Entity>& spriteEntities = world::entity_manager->GetEntitiesWithComponent<Sprite>();
+    SparseSet<Entity>& transformEntities = world::entity_manager->GetEntitiesWithComponent<Transform2D>();
+
+    auto spriteIt = spriteEntities.begin();
+    auto transformIt = transformEntities.begin();
+
+    while (spriteIt != spriteEntities.end() && transformIt != transformEntities.end()) {
+        Entity spriteEntity = *spriteIt;
+        Entity transformEntity = *transformIt;
+
+        if (spriteEntity == transformEntity) {
+            Sprite* sprite = world::entity_manager->GetComponent<Sprite>(spriteEntity);
+            Transform2D* transform = world::entity_manager->GetComponent<Transform2D>(transformEntity);
+
+            Draw(sprite, transform);
+
+            ++spriteIt;
+            ++transformIt;
+        }
+        else if (spriteEntity < transformEntity) {
+            ++spriteIt;
+        }
+        else {
+            ++transformIt;
+        }
     }
 
     SDL_RenderPresent(game::renderer);
 }
 
-void RenderingSystem::Draw(Entity entity) {
-    Image* image = world::entity_manager->GetComponent<Sprite>(entity)->image;
-    Transform2D* transform = world::entity_manager->GetComponent<Transform2D>(entity);
+void RenderingSystem::Draw(Sprite* sprite, Transform2D* transform) {
+    Image* image = sprite->image;
     Transform2D* camera = world::entity_manager->GetComponent<Transform2D>(world::camera);
 
     if (transform->position.x + transform->size.x/2 <= camera->position.x - camera->size.x/2 ||
