@@ -72,7 +72,7 @@ struct Vector2 {
         return Vector2{x + (other.x - x) * factor, y + (other.y - y) * factor};
     }
 
-    float DotProduct(const Vector2& other) {
+    float DotProduct(const Vector2& other) const {
         return x * other.x + y * other.y;
     }
 
