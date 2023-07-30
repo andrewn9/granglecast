@@ -22,9 +22,8 @@ struct Velocity {
 struct Collider {
     bool anchored;
     float mass;
-    float static_friction;
-    float dynamic_friction;
     float restitution; // Elasticity (0-1) Rigid - Elastic
+    Vector2 size;
 };
 
 struct Sprite {
