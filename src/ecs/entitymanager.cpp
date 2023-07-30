@@ -7,63 +7,63 @@
 #include "world.h"
 #include <string>
 
+// Create a new entity
 Entity EntityManager::CreateEntity() {
-    Entity entity;
+    // If there are no inactive entities, create a new one
     if (!inactive_entities.empty()) {
-        entity = inactive_entities.front();
+        // Get the first inactive entity
+        Entity new_entity = inactive_entities.front();
+        // Pop it from the list
         inactive_entities.pop();
-    } else {
-        if (components.size() >= MAX_ENTITIES) {
-            return 0;
-        }
-
-        entity = static_cast<Entity>(components.size());
-        components.emplace_back();
+        // Return the new entity
+        return new_entity;
     }
-    entity_mask.set(entity);
-    return entity;
+
+    // If there are no more entities to create, create a new one
+    if (next_entity < MAX_ENTITIES) {
+        // Create a new entity
+        Entity new_entity = next_entity;
+        // Increment the next entity
+        next_entity++;
+        // Return the new entity
+        return new_entity;
+    }
+
+    // If there are no more entities to create, return 0
+    return 0;
 }
 
+// Remove an entity
 void EntityManager::RemoveEntity(Entity entity) {
-    if (entity == 0 || entity >= MAX_ENTITIES) {
+    // If the entity is 0, return
+    if (entity == 0) {
         return;
     }
 
-    entity_mask.reset(entity);
-    components[entity].clear();
-    inactive_entities.push(entity);
-
-    for (auto& indexPair : componentIndex) {
-        auto& entities = indexPair.second;
-        entities.erase(std::remove_if(entities.begin(), entities.end(),
-            [entity](Entity e) { return e == entity; }), entities.end());
+    // Iterate through each component type
+    for (auto& [component_type, component_set] : component_data[entity]) {
+        // Remove the entity from the component set
+        component_sets[component_type].erase(entity);
     }
+    // Remove the entity from the component data
+    component_data.erase(entity);
+
+    // Push the entity back into the inactive list
+    inactive_entities.push(entity);
 }
 
+// Print the data
 void EntityManager::PrintData() const {
-    for (size_t entity = 1; entity < components.size(); ++entity) {
-        if (entity_mask.test(entity)) {
-            for (const auto& componentPair : components[entity]) {
-                std::type_index component_type = componentPair.first;
-                void* component = componentPair.second;
-                SDL_Log("Entity: %u | Type: %s | Component: %p", entity, component_type.name(), component);
-            }
+    // Iterate through each entity
+    for (const auto& [entity, components] : component_data) {
+        // Log the entity ID
+        SDL_Log("Entity ID: %u", entity);
+        // Iterate through each component type
+        for (const auto& [typeIndex, component] : components) {
+            // Log the component type ID
+            SDL_Log("\tComponent Type ID: %s", typeIndex.name());
         }
-    }
-
-    for (const auto& indexPair : componentIndex) {
-        std::type_index component_type = indexPair.first;
-        const auto& entities = indexPair.second;
-
-        std::string entitiesString;
-        for (const auto& entity : entities) {
-            entitiesString += std::to_string(entity) + ", ";
-        }
-
-        if (!entitiesString.empty()) {
-            entitiesString = entitiesString.substr(0, entitiesString.length() - 2);
-        }
-
-        SDL_Log("Type: %s | Entities: %s", component_type.name(), entitiesString.c_str());
+        // Log a new line
+        SDL_Log("");
     }
 }

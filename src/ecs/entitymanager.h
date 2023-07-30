@@ -7,126 +7,110 @@
 #pragma once
 
 #include <unordered_map>
-#include <vector>
 #include <bitset>
 #include <typeindex>
 #include <queue>
-#include <algorithm>
-#include <string>
+#include <cassert>
+#include <any>
 
 #include "components.h"
+#include "../util/sset.h"
+
+#define MAX_ENTITIES    500
+#define MAX_COMPONENTS  5
 
 typedef uint32_t Entity;
 
 class EntityManager {
-public:
-    Entity CreateEntity();
-    void RemoveEntity(Entity entity);
+    public:
+        Entity CreateEntity();
+        void RemoveEntity(Entity entity);
+        void PrintData() const;
 
-    template<typename Component>
-    void AddComponent(Entity entity, Component&& component);
+        // Add a component to an entity
+        template<typename Component>
+        void AddComponent(Entity entity, const Component& component) {
+            // If the entity is 0, return
+            if (entity == 0) {
+                return;
+            }
 
-    template<typename Component>
-    void RemoveComponent(Entity entity);
+            // Get the type of the component
+            std::type_index component_type = typeid(Component);
 
-    template<typename Component>
-    Component* GetComponent(Entity entity) const;
+            // If the entity already has the component, return
+            if (component_data.count(entity) > 0 && component_data[entity].count(component_type) > 0) {
+                return;
+            } else {
+                // Add the component to the entity
+                component_data[entity][component_type] = component;
+                // Add the entity to the component set
+                component_sets[component_type].insert(entity);
+            }
+        }
 
-    template<typename Component>
-    bool HasComponent(Entity entity) const;
+        // Remove a component from an entity
+        template<typename Component>
+        void RemoveComponent(Entity entity) {
+            // If entity is 0, return
+            if (entity == 0) {
+                return;
+            }
 
-    template<typename Component>
-    const std::vector<Entity>& GetEntitiesWithComponent() const;
+            // Get the type of component
+            std::type_index component_type = typeid(Component);
 
-    void PrintData() const;
+            // If the entity has the component and the component type is in the data
+            if (component_data.count(entity) > 0 && component_data[entity].count(component_type) > 0) {
+                // Remove the component from the data
+                component_data[entity].erase(component_type);
+                // Remove the entity from the component set
+                component_sets[component_type].erase(entity);
+            }
+        }
 
-private:
-    static constexpr size_t MAX_ENTITIES = 10000;
+        // Get a component from an entity
+        template<typename Component>
+        Component* GetComponent(Entity entity) {
+            // Get the type of component
+            std::type_index component_type = typeid(Component);
 
-    std::vector<std::unordered_map<std::type_index, void*>> components;
-    std::unordered_map<std::type_index, std::vector<Entity>> componentIndex;
-    std::queue<Entity> inactive_entities;
-    std::bitset<MAX_ENTITIES> entity_mask;
+            // If the entity has the component and the component type is in the data
+            if (component_data.count(entity) > 0 && component_data[entity].count(component_type) > 0) {
+                // Return the component
+                return &std::any_cast<Component&>(component_data[entity][component_type]);
+            }
+
+            // Return nullptr if the entity does not have the component
+            return nullptr;
+        }
+        
+        // Checks presence of component
+        template<typename Component>
+        bool HasComponent(Entity entity) const {
+            std::type_index component_type = typeid(Component);
+            auto it = component_sets.find(component_type);
+            return (it != component_sets.end()) && it->second.contains(entity);
+        }
+
+        template<typename Component>
+        SparseSet<Entity>& GetEntitiesWithComponent() {
+            std::type_index component_type = typeid(Component);
+            return component_sets[component_type];
+        }
+        
+
+    private:
+        // The next entity to be created
+        Entity next_entity = 1;
+
+        // Queue of last deleted entities
+        std::queue<Entity> inactive_entities;
+
+        // Stores component maps for each entity
+        std::unordered_map<Entity, std::unordered_map<std::type_index, std::any>> component_data;
+
+        // Sparse sets of each component type
+        std::unordered_map<std::type_index, SparseSet<Entity>> component_sets;
 };
-
-template<typename Component>
-void EntityManager::AddComponent(Entity entity, Component&& component) {
-    if (entity == 0 || entity >= MAX_ENTITIES) {
-        return;
-    }
-
-    std::type_index component_type = typeid(Component);
-
-    components[entity][component_type] = new Component(std::forward<Component>(component));
-    componentIndex[component_type].push_back(entity);
-}
-
-template<typename Component>
-void EntityManager::RemoveComponent(Entity entity) {
-    if (entity == 0 || entity >= MAX_ENTITIES) {
-        return;
-    }
-
-    std::type_index component_type = typeid(Component);
-
-    auto entity_iterator = components[entity].find(component_type);
-    if (entity_iterator != components[entity].end()) {
-        delete static_cast<Component*>(entity_iterator->second);
-        components[entity].erase(entity_iterator);
-
-        auto index_iterator = componentIndex.find(component_type);
-        if (index_iterator != componentIndex.end()) {
-            auto& entities = index_iterator->second;
-            entities.erase(std::remove_if(entities.begin(), entities.end(),
-                [entity](Entity e) { return e == entity; }), entities.end());
-        }
-    }
-}
-
-template<typename Component>
-Component* EntityManager::GetComponent(Entity entity) const {
-    if (entity >= MAX_ENTITIES) {
-        return nullptr;
-    }
-
-    std::type_index component_type = typeid(Component);
-
-    if (entity_mask.test(entity)) {
-        auto entity_iterator = components[entity].find(component_type);
-        if (entity_iterator != components[entity].end()) {
-            return static_cast<Component*>(entity_iterator->second);
-        }
-    }
-
-    return nullptr;
-}
-
-template<typename Component>
-bool EntityManager::HasComponent(Entity entity) const {
-    if (entity == 0 || entity >= MAX_ENTITIES) {
-        return false;
-    }
-
-    std::type_index componentType = typeid(Component);
-
-    if (components.size() <= entity) {
-        return false;
-    }
-
-    const auto& entityComponents = components[entity];
-    return entityComponents.find(componentType) != entityComponents.end();
-}
-
-template<typename Component>
-const std::vector<Entity>& EntityManager::GetEntitiesWithComponent() const {
-    std::type_index component_type = typeid(Component);
-    
-    auto it = componentIndex.find(component_type);
-    if (it != componentIndex.end()) {
-        return it->second;
-    }
-    
-    static const std::vector<Entity> empty;
-    return empty;
-}
 
