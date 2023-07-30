@@ -25,7 +25,5 @@ class World {
         World();
         void Update();
         void FixedUpdate();
-    private:
-        std::vector<System*> systems;
 };
 
