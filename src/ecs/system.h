@@ -8,7 +8,7 @@
 #include "entitymanager.h"  
 #include "events.h"
 
-class System {
-    public:
-        virtual void Update() = 0; // Mark function as purely virtual
-};
+// class System {
+//     public:
+//         virtual void Update() = 0; // Mark function as purely virtual
+// };
