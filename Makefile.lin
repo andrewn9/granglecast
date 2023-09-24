@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Wno-unused-parameter -g
 DEPFLAGS = -MMD -MP
-LDFLAGS = -lSDL2 -lSDL2_image -lSDL2_mixer
+LDFLAGS = -lSDL2 -lGLEW -lGL -lSDL2_image -lSDL2_mixer
 
 SRC_DIR = ./src
 BUILD_DIR = ./build

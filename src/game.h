@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <functional>
 #include <SDL2/SDL.h>
+#include <GL/glew.h>
 
 #include "resourcemanager.h"
 #include "ecs/world.h"
@@ -22,6 +23,7 @@ namespace game {
     extern ResourceManager* resource_manager;
     extern SDL_Window* window;
     extern SDL_Renderer* renderer;
+	extern SDL_GLContext gl_context;
     extern double delta_time;
     extern double const physics_time;
     extern bool is_running;

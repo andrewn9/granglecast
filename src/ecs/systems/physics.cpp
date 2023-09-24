@@ -6,8 +6,10 @@
 #include "../../game.h"
 #include "../world.h"
 
+using namespace world;
+
 void PhysicsSystem::Update() {
-    auto entities = world::entity_manager->GetEntitiesWithComponent<Transform2D>();
+    auto entities = entity_manager->GetEntitiesWithComponent<Transform2D>();
 
     for (int i = 0; i < entities.size(); i++) {
         Entity entity_a = entities[i];
@@ -16,29 +18,29 @@ void PhysicsSystem::Update() {
             Entity entity_b = entities[j];
 
             // This is very expensive
-            if (!world::entity_manager->HasComponent<Collider>(entity_a) || !world::entity_manager->HasComponent<Collider>(entity_b)) {
+            if (!entity_manager->HasComponent<Collider>(entity_a) || !entity_manager->HasComponent<Collider>(entity_b)) {
                 continue;
             }
 
             AABB(entity_a, entity_b);
         }
 
-        if (world::entity_manager->GetComponent<Velocity>(entity_a)) {
-            Vector2* velocity = &world::entity_manager->GetComponent<Velocity>(entity_a)->velocity;
-            Collider* collider = world::entity_manager->GetComponent<Collider>(entity_a);
+        if (entity_manager->GetComponent<Velocity>(entity_a)) {
+            Vector2* velocity = &entity_manager->GetComponent<Velocity>(entity_a)->velocity;
+            Collider* collider = entity_manager->GetComponent<Collider>(entity_a);
 
-            world::entity_manager->GetComponent<Transform2D>(entity_a)->position += *velocity;
+            entity_manager->GetComponent<Transform2D>(entity_a)->position += *velocity;
 
             if (!(collider && collider->anchored)) {
-                velocity->y += 0.5;
+                velocity->y -= 0.5;
             }
         }
     }
 }
 
 void PhysicsSystem::AABB(Entity entity_a, Entity entity_b) {
-    Transform2D* transformA = world::entity_manager->GetComponent<Transform2D>(entity_a);
-    Transform2D* transformB = world::entity_manager->GetComponent<Transform2D>(entity_b);
+    Transform2D* transformA = entity_manager->GetComponent<Transform2D>(entity_a);
+    Transform2D* transformB = entity_manager->GetComponent<Transform2D>(entity_b);
 
     Vector2 a_half_widths = transformA->size/2;
     Vector2 b_half_widths = transformB->size/2;
@@ -72,11 +74,11 @@ void PhysicsSystem::ResolveCollision(const CollisionEvent& collision_event) {
     Entity entity_a = collision_event.entity_a;
     Entity entity_b = collision_event.entity_b;
 
-    Collider& collider_a = *world::entity_manager->GetComponent<Collider>(entity_a);
-    Collider& collider_b = *world::entity_manager->GetComponent<Collider>(entity_b);
+    Collider& collider_a = *entity_manager->GetComponent<Collider>(entity_a);
+    Collider& collider_b = *entity_manager->GetComponent<Collider>(entity_b);
 
-    Velocity& velocity_a = *world::entity_manager->GetComponent<Velocity>(entity_a);
-    Velocity& velocity_b = *world::entity_manager->GetComponent<Velocity>(entity_b);
+    Velocity& velocity_a = *entity_manager->GetComponent<Velocity>(entity_a);
+    Velocity& velocity_b = *entity_manager->GetComponent<Velocity>(entity_b);
 
     // Calculate relative velocity
     Vector2 relative_velocity = velocity_b.velocity - velocity_a.velocity;
@@ -103,9 +105,9 @@ void PhysicsSystem::ResolveCollision(const CollisionEvent& collision_event) {
     velocity_a.velocity += impulse * a_inv_mass;
     velocity_b.velocity -= impulse * b_inv_mass;
 
-    SDL_Log("\n");
-    SDL_Log("entity %d x: %f y: %f", entity_a, velocity_a.velocity.x, velocity_a.velocity.y);
-    SDL_Log("entity %d x: %f y: %f", entity_b, velocity_b.velocity.x, velocity_b.velocity.y);
+    // SDL_Log("\n");
+    // SDL_Log("entity %d x: %f y: %f", entity_a, velocity_a.velocity.x, velocity_a.velocity.y);
+    // SDL_Log("entity %d x: %f y: %f", entity_b, velocity_b.velocity.x, velocity_b.velocity.y);
   
     //relative_velocity = velocity_b.velocity - velocity_a.velocity;
 
@@ -148,6 +150,6 @@ void PhysicsSystem::ResolveCollision(const CollisionEvent& collision_event) {
     const float percent = 1; // usually 20% to 80%
     Vector2 correction = collision_event.normal * ((collision_event.depth / (a_inv_mass + b_inv_mass)) * percent);
 
-    world::entity_manager->GetComponent<Transform2D>(entity_a)->position += correction * a_inv_mass;
-    world::entity_manager->GetComponent<Transform2D>(entity_b)->position -= correction * b_inv_mass;
+    entity_manager->GetComponent<Transform2D>(entity_a)->position += correction * a_inv_mass;
+    entity_manager->GetComponent<Transform2D>(entity_b)->position -= correction * b_inv_mass;
 }
