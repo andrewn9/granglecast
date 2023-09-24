@@ -4,12 +4,12 @@ experimental c++ game
 
  working on this on and off
 
-# big things to be did
+## big things to be did
 - open gl stuff
 - emscripten
 - online multiplayer (sdl_net)
 
-# build
+## build
 
 ```
 make -f (Makefile.lin/Makefile.win)
