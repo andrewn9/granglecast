@@ -4,6 +4,11 @@ experimental c++ game
 
  working on this on and off
 
+## features
+- ecs type architecture
+- impulse based physics
+- event system
+
 ## big things to be did
 - open gl stuff
 - emscripten
